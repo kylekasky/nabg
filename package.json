@@ -1,0 +1,23 @@
+{
+  "name": "socket-game",
+  "version": "1.0.0",
+  "description": "Socket.io game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/Veeto/socket-game.git"
+  },
+  "author": "*sob* *haha* *stab*",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/Veeto/socket-game/issues"
+  },
+  "homepage": "https://gitlab.com/Veeto/socket-game#README",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.5.1"
+  }
+}
