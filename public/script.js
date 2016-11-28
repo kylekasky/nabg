@@ -140,6 +140,7 @@ $('document').ready(function () {
         var newestPlayer = players[players.length - 1].name;
         document.getElementById('players').innerHTML = '';
 
+        console.log("num" + players.length);
         for (var i = 0; i < players.length; i++) {
             playerSprites[i].x = players[i].coords.x;
             playerSprites[i].y = players[i].coords.y;
