@@ -44,6 +44,7 @@ function hideGame() {
     for (var i = 0; i < playerSprites.length; i++) {
         hideItems(playerSprites[i]);
     }
+    hideLevelOne();
 }
 
 function showLevelOne() {

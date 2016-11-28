@@ -11,6 +11,7 @@ var playerSprites = [];
 var explosionSprite;
 var playerData = [];
 var dead = false;
+var winnerName;
 
 const HOLD = 0;
 const CONSTRUCT = 100;
@@ -197,6 +198,14 @@ $('document').ready(function () {
 
     socket.on('disconnected', function () {
         alert('Sorry but this game is full');
+    });
+
+    socket.on('winner', function (name) {
+
+        winnerName = new createjs.Text(name + " survived!", "36px Arial", "#000");
+        winnerName.x = 200;
+        winnerName.y = 200;
+        stage.addChild(winnerName);
     });
 
     initGame();

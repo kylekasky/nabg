@@ -28,12 +28,17 @@ function loop() {
             hideGame();
             showGameOver();
             resetGameTimer();
+            determineWinner();
             gameState = HOLD;
             break;
         default:
             break;
     }
     stage.update();
+}
+
+function determineWinner() {
+    socket.emit("who won");
 }
 
 function startGame() {

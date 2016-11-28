@@ -55,7 +55,7 @@ io.on("connection", function (socket) {
 
         socket.on("dead", function (name) {
             for (var i = 0; i < players.length; i++) {
-                if (players[i].name == name) {
+                if (players[i].name == name && players[i].lives <= 0) {
                     players[i].dead = true;
                 }
             }
@@ -64,7 +64,7 @@ io.on("connection", function (socket) {
             for (var i = 0; i < players.length; i++) {
                 if (players[i].dead) deadcount++;
             }
-            if (deadcount >= (players.length - 1)) gameState = GAME_OVER
+            if (deadcount >= (players.length - 1)) io.emit('game state change', 700);
         });
 
         socket.on("game start", function () {
@@ -139,7 +139,6 @@ io.on("connection", function (socket) {
 
         //decrements lives
         socket.on('life changed', function (life) {
-            console.log(life.name);
             for (var i = 0; i < players.length; i++) {
                 if (players[i].name == life.name) {
                     if (players[i].lives > 0) {
@@ -167,6 +166,18 @@ io.on("connection", function (socket) {
                     });
                 }
             }
+        });
+
+        socket.on('who won', function () {
+            var winner = false;
+            for (var i = 0; i < players.length; i++) {
+                console.log(players[i].name + " dead: " + players[i].lives);
+                if (!players[i].dead) {
+                    winner = true;
+                    io.emit("winner", players[i].name);
+                }
+            };
+            if (!winner) io.emit("winner", "Nobody");
         });
 
     } else {
