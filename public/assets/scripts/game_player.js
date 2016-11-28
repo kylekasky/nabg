@@ -11,34 +11,38 @@ function buildBomb() {
 }
 
 function checkMovement() {
-    if (leftPressed) {
-        currentPlayer.sprite.x -= currentPlayer.moveSpeed;
-        if (checkMoveCollision()) currentPlayer.sprite.x += currentPlayer.moveSpeed;
+    if (!dead) {
+        if (leftPressed) {
+            currentPlayer.sprite.x -= currentPlayer.moveSpeed;
+            if (checkMoveCollision()) currentPlayer.sprite.x += currentPlayer.moveSpeed;
+        }
+        if (rightPressed) {
+            currentPlayer.sprite.x += currentPlayer.moveSpeed;
+            if (checkMoveCollision()) currentPlayer.sprite.x -= currentPlayer.moveSpeed;
+        }
+        if (upPressed) {
+            currentPlayer.sprite.y -= currentPlayer.moveSpeed;
+            if (checkMoveCollision()) currentPlayer.sprite.y += currentPlayer.moveSpeed;
+        }
+        if (downPressed) {
+            currentPlayer.sprite.y += currentPlayer.moveSpeed;
+            if (checkMoveCollision()) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
+        }
+        if (leftPressed || rightPressed || upPressed || downPressed) {
+            console.log("telling the server coords");
+            socket.emit("coords changed", {
+                name: currentPlayer.name,
+                x: currentPlayer.sprite.x,
+                y: currentPlayer.sprite.y
+            });
+        }
     }
-    if (rightPressed) {
-        currentPlayer.sprite.x += currentPlayer.moveSpeed;
-        if (checkMoveCollision()) currentPlayer.sprite.x -= currentPlayer.moveSpeed;
-    }
-    if (upPressed) {
-        currentPlayer.sprite.y -= currentPlayer.moveSpeed;
-        if (checkMoveCollision()) currentPlayer.sprite.y += currentPlayer.moveSpeed;
-    }
-    if (downPressed) {
-        currentPlayer.sprite.y += currentPlayer.moveSpeed;
-        if (checkMoveCollision()) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
-    }
-    if (leftPressed || rightPressed || upPressed || downPressed) {
-        console.log("telling the server coords");
-        socket.emit("coords changed", {
-            name: currentPlayer.name,
-            x: currentPlayer.sprite.x,
-            y: currentPlayer.sprite.y
-        });
-    }
+
 }
 
-function causeExplosion(center, range) {
+function causeExplosion(center, range, name) {
     var newExplosion = explosionSprite.clone();
+    newExplosion.owner = name;
     newExplosion.x = center.x;
     newExplosion.y = center.y;
     newExplosion.visible = true;
@@ -47,6 +51,7 @@ function causeExplosion(center, range) {
 
     for (var i = 0; i < range; i++) {
         newExplosion = explosionSprite.clone();
+        newExplosion.owner = name;
         newExplosion.x = center.x + (30 * (i + 1));
         newExplosion.y = center.y;
         newExplosion.visible = true;
@@ -54,6 +59,7 @@ function causeExplosion(center, range) {
         explosions.push(newExplosion);
 
         newExplosion = explosionSprite.clone();
+        newExplosion.owner = name;
         newExplosion.x = center.x;
         newExplosion.y = center.y + (30 * (i + 1));
         newExplosion.visible = true;
@@ -61,6 +67,7 @@ function causeExplosion(center, range) {
         explosions.push(newExplosion);
 
         newExplosion = explosionSprite.clone();
+        newExplosion.owner = name;
         newExplosion.x = center.x - (30 * (i + 1));
         newExplosion.y = center.y;
         newExplosion.visible = true;
@@ -68,6 +75,7 @@ function causeExplosion(center, range) {
         explosions.push(newExplosion);
 
         newExplosion = explosionSprite.clone();
+        newExplosion.owner = name;
         newExplosion.x = center.x;
         newExplosion.y = center.y - (30 * (i + 1));
         newExplosion.visible = true;
@@ -88,7 +96,7 @@ function checkExplosions() {
                     y: currentPlayer.bombClones[i].y,
                 }
 
-                causeExplosion(explosionCenter, currentPlayer.range);
+                causeExplosion(explosionCenter, currentPlayer.range, currentPlayer.name);
             }
         }
     }
@@ -117,7 +125,7 @@ function cloneEnemyBombs() {
 }
 
 function dropBomb() {
-    if (spacePressed) {
+    if (spacePressed && !dead) {
         for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
             if (!currentPlayer.bombClones[i].visible) {
                 var currentPlayerSprite = currentPlayer.sprite;

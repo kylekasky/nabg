@@ -53,6 +53,20 @@ io.on("connection", function (socket) {
             });
         });
 
+        socket.on("dead", function (name) {
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].name == name) {
+                    players[i].dead = true;
+                }
+            }
+
+            var deadcount = 0;
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].dead) deadcount++;
+            }
+            if (deadcount >= (players.length - 1)) gameState = GAME_OVER
+        });
+
         socket.on("game start", function () {
             console.log("game started");
             io.emit('game state change', 400)
@@ -125,7 +139,7 @@ io.on("connection", function (socket) {
 
         //decrements lives
         socket.on('life changed', function (life) {
-            console.log(life);
+            console.log(life.name);
             for (var i = 0; i < players.length; i++) {
                 if (players[i].name == life.name) {
                     if (players[i].lives > 0) {
@@ -170,6 +184,7 @@ function Player(name, slotId) {
     this.playerSlotId = slotId;
     this.ready = false;
     this.score = 0;
+    this.dead = false;
     switch (slotId) {
         case 0:
             this.coords = {

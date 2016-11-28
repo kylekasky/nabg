@@ -10,6 +10,7 @@ var gameReady = false;
 var playerSprites = [];
 var explosionSprite;
 var playerData = [];
+var dead = false;
 
 const HOLD = 0;
 const CONSTRUCT = 100;
@@ -117,11 +118,20 @@ $('document').ready(function () {
     socket.on('life change', function (life) {
         // $('#messages').prepend($('<li>').text(life.name + ' now has ' + life.num + ' lives'));
         // $('#' + life.name + 'Lives').text('Lives: ' + life.num);
+
         for (var i = 0; i < playerData.length; i++) {
             if (life.name == playerData[i].name) {
                 playerData[i].lives = life.num;
+                var lifeText = stage.getChildByName("player" + playerData[i].slotId + "lives");
+                lifeText.text = life.num;
+                if (life.num == 0) {
+                    socket.emit("dead", currentPlayer.name);
+                    stage.removeChild(currentPlayer.playerSprite);
+                    dead = true;
+                }
             }
         }
+        // updateHUD();
     });
 
     socket.on('name received', function (players) {
@@ -173,8 +183,16 @@ $('document').ready(function () {
     });
 
     socket.on('score change', function (score) {
-        $('#messages').prepend($('<li>').text(score.name + ' now has ' + score.num + ' points'));
-        $('#' + score.name + 'Score').text('Score: ' + score.num);
+        // $('#messages').prepend($('<li>').text(score.name + ' now has ' + score.num + ' points'));
+        // $('#' + score.name + 'Score').text('Score: ' + score.num);
+
+        for (var i = 0; i < playerData.length; i++) {
+            if (score.name == playerData[i].name) {
+                playerData[i].lives = score.num;
+                var scoreText = stage.getChildByName("player" + playerData[i].slotId + "score");
+                scoreText.text = score.num;
+            }
+        }
     });
 
     socket.on('disconnected', function () {
@@ -352,37 +370,12 @@ function loadComplete(event) {
 
 function updateHUD() {
     for (var i = 0; i < playerData.length; i++) {
-        var existingContainer = stage.getChildByName("player" + slotId);
-        if (existingContainer) {
-            stage.removeChild(existingContainer);
-        }
-
-        var playerContainer = new createjs.Container();
-
-        var playerName = new createjs.Text(name, "12px Arial", "#000");
-        playerName.x = 20;
-        playerName.y = 75 * slotId + 20;
-        playerContainer.addChild(playerName);
-
-        var playerScore = new createjs.Text(score, "12px Arial", "#000");
-        playerScore.x = 20;
-        playerScore.y = 75 * slotId + 35;
-        playerContainer.addChild(playerScore);
-
-        var playerLives = new createjs.Text(lives, "12px Arial", "#000");
-        playerLives.x = 20;
-        playerLives.y = 75 * slotId + 50;
-        playerContainer.addChild(playerLives);
-
-        var playerPowerUp = new createjs.Text(powerup, "12px Arial", "#000");
-        playerPowerUp.x = 20;
-        playerPowerUp.y = 75 * slotId + 65;
-        playerContainer.addChild(playerPowerUp);
-
-        playerContainer.name = "player" + slotId;
-
-        stage.addChild(playerContainer);
+        playerData[i].nameText = playerData[i].name;
+        playerData[i].scoreText = playerData[i].score;
+        playerData[i].livesText = playerData[i].lives;
+        playerData[i].powerupText = playerData[i].powerup;
     }
+    stage.update();
 }
 
 
@@ -397,22 +390,26 @@ function addPlayer(name, score, lives, powerup, slotId) {
     var playerName = new createjs.Text(name, "12px Arial", "#000");
     playerName.x = 20;
     playerName.y = 75 * slotId + 20;
-    playerContainer.addChild(playerName);
+    playerName.name = "player" + slotId + "name";
+    stage.addChild(playerName);
 
     var playerScore = new createjs.Text(score, "12px Arial", "#000");
     playerScore.x = 20;
     playerScore.y = 75 * slotId + 35;
-    playerContainer.addChild(playerScore);
+    playerScore.name = "player" + slotId + "score";
+    stage.addChild(playerScore);
 
     var playerLives = new createjs.Text(lives, "12px Arial", "#000");
     playerLives.x = 20;
     playerLives.y = 75 * slotId + 50;
-    playerContainer.addChild(playerLives);
+    playerLives.name = "player" + slotId + "lives";
+    stage.addChild(playerLives);
 
     var playerPowerUp = new createjs.Text(powerup, "12px Arial", "#000");
     playerPowerUp.x = 20;
     playerPowerUp.y = 75 * slotId + 65;
-    playerContainer.addChild(playerPowerUp);
+    playerPowerUp.name = "player" + slotId + "powerup";
+    stage.addChild(playerPowerUp);
 
     playerContainer.name = "player" + slotId;
 
@@ -420,9 +417,13 @@ function addPlayer(name, score, lives, powerup, slotId) {
 
     playerData.push({
         name: name,
+        nameText: playerName,
         score: score,
+        scoreText: playerScore,
         lives: lives,
+        livesText: playerLives,
         powerup: powerup,
+        powerupText: playerPowerUp,
         slotId: slotId
     });
 
@@ -458,7 +459,7 @@ function playerSpriteInit() {
     for (var i = 0; i < 4; i++) {
         walksheets.push(new createjs.SpriteSheet({
             images: [queue.getResult("playerSprite" + i)],
-            frames: [[0, 0, 43, 44], [43, 0, 43, 44], [86, 0, 43, 44], [0, 44, 43, 44], [43, 44, 43, 44], [86, 44, 43, 44], [0, 88, 43, 44], [43, 88, 43, 44], [86, 88, 43, 44], [0, 132, 43, 44], [43, 132, 43, 44], [86, 132, 43, 44]],
+            frames: [[0, 0, 28, 28], [28, 0, 28, 28], [56, 0, 28, 28], [0, 28, 28, 28], [28, 28, 28, 28], [56, 28, 28, 28], [0, 56, 28, 28], [28, 56, 28, 28], [56, 56, 28, 28], [0, 84, 28, 28], [28, 84, 28, 28], [56, 84, 28, 28]],
             animations: {
                 walkDown: [0, 2, "walkDown", .35],
                 walkLeft: [3, 5, "walkLeft", .35],

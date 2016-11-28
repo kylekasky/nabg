@@ -18,11 +18,22 @@ function runGameTimer() {
             if (collision) {
                 stage.removeChild(breakableTiles[j]);
                 breakableTiles.splice(j, 1);
+                var temp = {
+                    name: explosions[i].owner
+                }
+                console.log(explosions[i].owner);
+                socket.emit('score changed', temp);
             }
         }
         var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, explosions[i], .8);
         if (collision) {
-
+            var temp = {
+                name: currentPlayer.name
+            }
+            socket.emit('life changed', temp);
+            currentPlayer.lives--;
         }
+        if (currentPlayer.lives <= 0) socket.emit("dead", currentPlayer.name);
     }
+
 }
