@@ -39,6 +39,7 @@ function loop() {
 
 function determineWinner() {
     socket.emit("who won");
+
 }
 
 function startGame() {
