@@ -123,8 +123,7 @@ $('document').ready(function () {
         for (var i = 0; i < playerData.length; i++) {
             if (life.name == playerData[i].name) {
                 playerData[i].lives = life.num;
-                var lifeText = stage.getChildByName("player" + playerData[i].slotId + "lives");
-                lifeText.text = life.num;
+                playerData[i].livesText.text = life.num;
                 if (life.num == 0) {
                     socket.emit("dead", currentPlayer.name);
                     stage.removeChild(currentPlayer.playerSprite);
@@ -132,6 +131,7 @@ $('document').ready(function () {
                 }
             }
         }
+        stage.update();
         // updateHUD();
     });
 

@@ -83,6 +83,9 @@ io.on("connection", function (socket) {
             for (var i = 0; i < playerSlots.length; i++) {
                 if (socket.id === playerSlots[i]) {
                     slotId = i;
+                    if (process.env.PORT > 0) {
+                        slotId--;
+                    }
                 }
             }
             var newPlayer = new Player(name, slotId);
