@@ -15,22 +15,22 @@ function checkMovement() {
         var animation = "walkDown";
         if (leftPressed) {
             animation = "walkLeft";
-            currentPlayer.sprite.x -= currentPlayer.moveSpeed;
+            if (currentPlayer.sprite.x > -1) currentPlayer.sprite.x -= currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.x += currentPlayer.moveSpeed;
         }
         if (rightPressed) {
             animation = "walkRight";
-            currentPlayer.sprite.x += currentPlayer.moveSpeed;
+            if (currentPlayer.sprite.x < 770) currentPlayer.sprite.x += currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.x -= currentPlayer.moveSpeed;
         }
         if (upPressed) {
             animation = "walkUp";
-            currentPlayer.sprite.y -= currentPlayer.moveSpeed;
+            if (currentPlayer.sprite.y > 50) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.y += currentPlayer.moveSpeed;
         }
         if (downPressed) {
             animation = "walkDown";
-            currentPlayer.sprite.y += currentPlayer.moveSpeed;
+            if (currentPlayer.sprite.y < 570) currentPlayer.sprite.y += currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
         }
         if (leftPressed || rightPressed || upPressed || downPressed) {
@@ -106,19 +106,19 @@ function checkExplosions() {
                 causeExplosion(explosionCenter, currentPlayer.range, currentPlayer.name);
             }
         }
-//        if (enemyBombClones[i].visible) {
-//            if ((frameCount - enemyBombClones[i].frameSet) >= 90) {
-//                enemyBombClones[i].visible = false;
-//                enemyBombClones[i].frameSet = -1;
-//
-//                explosionCenter = {
-//                    x: enemyBombClones[i].x - 15,
-//                    y: enemyBombClones[i].y,
-//                }
-//
-//                causeExplosion(explosionCenter, enemyBombClones[i].range, enemyBombClones[i].name);
-//            }
-//        }
+        //        if (enemyBombClones[i].visible) {
+        //            if ((frameCount - enemyBombClones[i].frameSet) >= 90) {
+        //                enemyBombClones[i].visible = false;
+        //                enemyBombClones[i].frameSet = -1;
+        //
+        //                explosionCenter = {
+        //                    x: enemyBombClones[i].x - 15,
+        //                    y: enemyBombClones[i].y,
+        //                }
+        //
+        //                causeExplosion(explosionCenter, enemyBombClones[i].range, enemyBombClones[i].name);
+        //            }
+        //        }
     }
     for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
         if (enemyBombClones[i].visible) {
@@ -181,7 +181,7 @@ function hideBombs() {
     for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
         currentPlayer.bombClones[i].visible = false;
     }
-    
+
     for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
         enemyBombClones[i].visible = false;
     }

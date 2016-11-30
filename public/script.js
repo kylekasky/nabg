@@ -111,14 +111,16 @@ $('document').ready(function () {
     });
 
     socket.on("coords change", function (coords) {
-        console.log(coords.animation);
-        playerSprites[coords.who].x = coords.x;
-        playerSprites[coords.who].y = coords.y;
-        if (playerSprites[coords.who].lastAnimation != coords.animation) {
-            playerSprites[coords.who].gotoAndPlay(coords.animation);
-            playerSprites[coords.who].lastAnimation = coords.animation;
+        if (coords.name != currentPlayer.name) {
+            console.log(coords.animation);
+            playerSprites[coords.who].x = coords.x;
+            playerSprites[coords.who].y = coords.y;
+            if (playerSprites[coords.who].lastAnimation != coords.animation) {
+                playerSprites[coords.who].gotoAndPlay(coords.animation);
+                playerSprites[coords.who].lastAnimation = coords.animation;
+            }
+            stage.update();
         }
-        stage.update();
     });
 
     socket.on("game state change", function (state) {

@@ -112,14 +112,14 @@ io.on("connection", function (socket) {
             // });
             io.emit('name received', players);
         });
-        
+
         //player reset should be non-destructive
         socket.on('reset players', function (playersRecieved) {
             var newplayers = [];
             for (var i = 0; i < playersRecieved.length; i++) {
                 var newPlayer = new Player(playersRecieved[i].name, playersRecieved[i].slotId);
                 newplayers.push(newPlayer);
-                
+
             }
             players = newplayers;
             console.log('app:reset players');
@@ -163,6 +163,7 @@ io.on("connection", function (socket) {
                         y: coords.y,
                         sid: socket.id,
                         who: i,
+                        name: coords.name,
                         animation: coords.animation
                     });
                 }
