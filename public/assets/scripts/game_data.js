@@ -1,6 +1,9 @@
 var levelOneStageObjects = [];
 var breakableTiles = [];
 var unbreakableTiles = [];
+var topBarUI = {};
+var topBarObjects = [];
+var redXArray = [];
 var TILE_SIDE_LENGTH = 30;
 var EMPTY = 0;
 var GREY_BLOCK = 1;
@@ -74,5 +77,47 @@ function levelOneBuild() {
     }
 
     hideLevelOne();
+}
+
+function fillTopBarUI() {
+    playerData.forEach(function (player, index) {
+        console.log('playerIndex: ' + index);
+        if(player.ready) {
+            var uiSpriteClone = playerSprites[index].clone(true);
+            uiSpriteClone.x = 25 + 175 * index;
+            uiSpriteClone.y = 11;
+            uiSpriteClone.visible = false;
+            uiSpriteClone.gotoAndPlay("walkDown");
+            
+            var redX = new createjs.Bitmap(queue.getResult('redX'));
+            redX.x = 25 + 175 * index;
+            redX.y = 11;
+            redX.visible = false;
+            redXArray.push(redX);
+            
+            player.nameText.x = 68 + 175 * index;
+            player.nameText.y = 11;
+            player.nameText.visible = false;
+            player.scoreText.x = 68 + 175 * index;
+            player.scoreText.y = 11 + 15;
+            player.scoreText.visible = false;
+            topBarObjects.push(player.nameText);
+            topBarObjects.push(player.scoreText);
+            topBarObjects.push(uiSpriteClone);
+            stage.addChild(uiSpriteClone);
+            stage.addChild(redX);
+        }
+    });
+}
+
+function topBarUIBuild() {
+    var topBar = new createjs.Shape();
+    topBar.graphics.beginFill('#CCDDCC').drawRect(0, 0, CANVAS_WIDTH, 50);
+    topBar.x = 0;
+    topBar.y = 0;
+    topBar.visible = false;
+    topBarUI = topBar;
+    var titleScreenIndex = stage.getChildIndex(playAreaScreen);
+    stage.addChildAt(topBar, titleScreenIndex + 1);
 }
 //Rework this to accept an (2D?) array with characters denoting which type of block is places (bombable/unbombable)

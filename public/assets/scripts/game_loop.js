@@ -16,8 +16,9 @@ function loop() {
             break;
         case START_GAME:
             startGame();
-            showGame();
             hideTitle();
+            showGame();
+            showTopBar();
             // playMusic();
             gameState = IN_GAME;
             break;
@@ -26,10 +27,21 @@ function loop() {
             break;
         case GAME_OVER:
             hideGame();
+            hideTopBar();
+            hideBombs();
             showGameOver();
             resetGameTimer();
             determineWinner();
             gameState = HOLD;
+            break;
+        case RESET:
+            if(isGameOver) {
+                isGameOver = false;
+                movePlayerNames();
+                resetPlayers();
+                hideGameOver();
+            }
+            gameState = TITLE;
             break;
         default:
             break;
@@ -39,6 +51,7 @@ function loop() {
 
 function determineWinner() {
     socket.emit("who won");
+
 }
 
 function startGame() {
@@ -54,7 +67,7 @@ function startGame() {
     cloneBombs();
     cloneEnemyBombs();
     showLevelOne();
-
+    fillTopBarUI();
 }
 
 function cleanUpGame() {
@@ -66,4 +79,23 @@ function gameLoop() {
     checkMovement();
     dropBomb();
     checkExplosions();
+}
+
+function movePlayerNames() {
+    titlePlayerList.forEach(function (playerTextObj, index) {
+        playerTextObj.x = 20;
+        playerTextObj.y = 35 + index * 15;
+    });   
+}
+
+function resetPlayers() {
+    var abbridgedPlayerData = [];
+    playerData.forEach(function (player, index) {
+        var abbPlayer = {
+            name: player.name,
+            slotId: player.slotId
+        }
+        abbridgedPlayerData.push(abbPlayer);
+    });
+    socket.emit('reset players', abbridgedPlayerData);
 }

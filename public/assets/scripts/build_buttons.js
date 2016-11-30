@@ -65,7 +65,7 @@ function setupButtons() {
 
     mainmenuBtn.on("click", function (evt) {
         console.log("Main Menu Clicked");
-        gameState = TITLE;
+        gameState = RESET;
     });
     // mainmenuBtn.on("mouseover", function (evt) {
     //     console.log("Main Menu Mouse Over");

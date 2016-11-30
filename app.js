@@ -67,6 +67,22 @@ io.on("connection", function (socket) {
             if (deadcount >= (players.length - 1)) io.emit('game state change', 700);
         });
 
+        socket.on("drop powerup", function (explosionLocation) {
+            var num = Math.floor(Math.random() * 3);
+            var powerup = "";
+            switch (num) {
+                case 0: powerup = "bombPowerUp"; break;
+                case 1: powerup = "movePowerUp"; break;
+                case 2: powerup = "rangePowerUp"; break;
+                default: break;
+            }
+            io.emit("powerup dropped", {
+                name: powerup,
+                x: explosionLocation.x,
+                y: explosionLocation.y
+            });
+        });
+
         socket.on("game start", function () {
             console.log("game started");
             io.emit('game state change', 400)
@@ -96,7 +112,19 @@ io.on("connection", function (socket) {
             // });
             io.emit('name received', players);
         });
-
+        
+        //player reset should be non-destructive
+        socket.on('reset players', function (playersRecieved) {
+            var newplayers = [];
+            for (var i = 0; i < playersRecieved.length; i++) {
+                var newPlayer = new Player(playersRecieved[i].name, playersRecieved[i].slotId);
+                newplayers.push(newPlayer);
+                
+            }
+            players = newplayers;
+            console.log('app:reset players');
+            io.emit('players reset', newplayers);
+        });
         socket.on('player ready', function (playerName) {
             for (var i = 0; i < players.length; i++) {
                 if (players[i].name == playerName) {
@@ -134,7 +162,8 @@ io.on("connection", function (socket) {
                         x: coords.x,
                         y: coords.y,
                         sid: socket.id,
-                        who: i
+                        who: i,
+                        animation: coords.animation
                     });
                 }
             }
@@ -174,7 +203,6 @@ io.on("connection", function (socket) {
         socket.on('who won', function () {
             var winner = false;
             for (var i = 0; i < players.length; i++) {
-                console.log(players[i].name + " dead: " + players[i].lives);
                 if (!players[i].dead) {
                     winner = true;
                     io.emit("winner", players[i].name);
@@ -199,6 +227,10 @@ function Player(name, slotId) {
     this.ready = false;
     this.score = 0;
     this.dead = false;
+    this.coords = {
+        x: 50,
+        y: 50
+    };
     switch (slotId) {
         case 0:
             this.coords = {

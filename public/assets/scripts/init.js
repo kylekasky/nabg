@@ -6,7 +6,7 @@ var mouseX, mouseY;
 function setupHUD() {
     mouseCoords = new createjs.Text("Mouse: ", "12px Arial", "#000");
     mouseCoords.x = 700;
-    mouseCoords.y = 50;
+    mouseCoords.y = 10;
     stage.addChild(mouseCoords);
 
     score = 0;
@@ -16,8 +16,8 @@ function setupHUD() {
     stage.addChild(scoreText);
 
     gameTimerText = new createjs.Text("Time: " + gameTimer, "12px Arial", "#000");
-    gameTimerText.x = 100;
-    gameTimerText.y = 35;
+    gameTimerText.x = 700;
+    gameTimerText.y = 25;
     stage.addChild(gameTimerText);
 
     hideItems(scoreText, gameTimerText);
@@ -40,4 +40,5 @@ function construct() {
     mouseInit();
     showTitle();
     levelOneBuild();
+    topBarUIBuild();
 }

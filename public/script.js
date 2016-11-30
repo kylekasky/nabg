@@ -10,9 +10,14 @@ var gameReady = false;
 var playerSprites = [];
 var explosionSprite;
 var playerData = [];
+var titlePlayerList = [];
 var dead = false;
 var winnerName;
-
+var powerups = {};
+var playersInGameText = false;
+var CANVAS_HEIGHT = 600;
+var CANVAS_WIDTH = 800;
+var isGameOver = false;
 const HOLD = 0;
 const CONSTRUCT = 100;
 const TITLE = 200;
@@ -21,6 +26,7 @@ const START_GAME = 400;
 const START_LEVEL = 500;
 const IN_GAME = 600;
 const GAME_OVER = 700;
+const RESET = 800;
 
 var gameState = HOLD;
 
@@ -73,7 +79,7 @@ $('document').ready(function () {
             score: 0,
             sid: socket.id,
             sprite: playerSprite
-        }
+        };
         socket.emit('new player', playerName);
         $('#message_form').show();
         $('#name_form').hide();
@@ -84,7 +90,7 @@ $('document').ready(function () {
         var temp = {
             name: currentPlayer.name,
             power: 'cat'
-        }
+        };
         socket.emit('powerup changed', temp);
     });
 
@@ -92,7 +98,7 @@ $('document').ready(function () {
         evt.preventDefault();
         var temp = {
             name: currentPlayer.name
-        }
+        };
         socket.emit('score changed', temp);
     });
 
@@ -105,14 +111,19 @@ $('document').ready(function () {
     });
 
     socket.on("coords change", function (coords) {
-        console.log(playerSprites);
+        console.log(coords.animation);
         playerSprites[coords.who].x = coords.x;
         playerSprites[coords.who].y = coords.y;
+        if (playerSprites[coords.who].lastAnimation != coords.animation) {
+            playerSprites[coords.who].gotoAndPlay(coords.animation);
+            playerSprites[coords.who].lastAnimation = coords.animation;
+        }
         stage.update();
     });
 
     socket.on("game state change", function (state) {
-        console.log("new state: " + state)
+        console.log("new state: " + state);
+        if (gameState === GAME_OVER) { isGameOver = true; }
         gameState = state;
     });
 
@@ -124,10 +135,13 @@ $('document').ready(function () {
             if (life.name == playerData[i].name) {
                 playerData[i].lives = life.num;
                 playerData[i].livesText.text = life.num;
-                if (life.num == 0) {
-                    socket.emit("dead", currentPlayer.name);
-                    stage.removeChild(currentPlayer.playerSprite);
-                    dead = true;
+                if (life.num === 0) {
+                    socket.emit("dead", life.name);//currentPlayer.name);
+                    redXArray[i].visible = true;
+                    playerSprites[i].visible = false; //stage.removeChild(playerSprites[i])//currentPlayer.playerSprite);
+                    if (life.name === currentPlayer.name) {
+                        dead = true;
+                    }
                 }
             }
         }
@@ -139,8 +153,7 @@ $('document').ready(function () {
         //currentPlayer = players[players.length - 1].name; //setting up player when form is submitted
         var newestPlayer = players[players.length - 1].name;
         document.getElementById('players').innerHTML = '';
-
-        console.log("num" + players.length);
+        playerData = []; // playerData needs to be reset so that there aren't extra player objects in the game
         for (var i = 0; i < players.length; i++) {
             playerSprites[i].x = players[i].coords.x;
             playerSprites[i].y = players[i].coords.y;
@@ -153,6 +166,19 @@ $('document').ready(function () {
         $('#messages').prepend($('<li>').text(newestPlayer + ' has joined the game'));
     });
 
+    socket.on('players reset', function (players) {
+        playerData = [];
+        titlePlayerList = [];
+        for (var i = 0; i < players.length; i++) {
+            playerSprites[i].x = players[i].coords.x;
+            playerSprites[i].y = players[i].coords.y;
+            addPlayer(players[i].name, players[i].score, players[i].lives, players[i].powerup, players[i].playerSlotId);
+            if (players[i].name == currentPlayer.name) {
+                currentPlayer.sprite = playerSprites[i];
+            }
+        }
+    });
+
     // socket.on('new player join successful', function (playerInfo) {
     //     if (socket.id === playerInfo) {
     //         console.log('join successful');
@@ -163,9 +189,19 @@ $('document').ready(function () {
     socket.on('player ready check', function (areAllPlayersReady) {
         if (areAllPlayersReady) {
             gameReady = true;
+            playerData.forEach(function (player, index) {
+                player.ready = true;
+            })
             console.log('allPlayersReady');
             gameState = START_GAME;
         }
+    });
+
+    socket.on('powerup dropped', function (powerup) {
+        //clone powerup.name
+        //place at x,y
+        //disappear after 5 seconds
+        //disappear when touched, apply powerup
     });
 
     socket.on('powerup change', function (powerup) {
@@ -190,9 +226,9 @@ $('document').ready(function () {
 
         for (var i = 0; i < playerData.length; i++) {
             if (score.name == playerData[i].name) {
-                playerData[i].lives = score.num;
+                playerData[i].score = score.num;
                 var scoreText = stage.getChildByName("player" + playerData[i].slotId + "score");
-                scoreText.text = score.num;
+                scoreText.text = "Score: " + score.num;
             }
         }
     });
@@ -202,8 +238,7 @@ $('document').ready(function () {
     });
 
     socket.on('winner', function (name) {
-
-        winnerName = new createjs.Text(name + " survived!", "36px Arial", "#000");
+        winnerName.text = name + " survived!";
         winnerName.x = 200;
         winnerName.y = 200;
         stage.addChild(winnerName);
@@ -213,14 +248,15 @@ $('document').ready(function () {
 });
 
 function initGame() {
+    winnerName = new createjs.Text(name + " survived!", "36px Arial", "#000");
     setupCanvas();
     loadFiles();
 }
 
 function setupCanvas() {
     var canvas = document.getElementById("game");
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
     stage = new createjs.Stage(canvas);
     stage.enableMouseOver();
 }
@@ -325,7 +361,15 @@ manifest = [
     },
     {
         src: "images/extrabomb.png",
-        id: "extraBomb"
+        id: "bombPowerUp"
+    },
+    {
+        src: "images/increasemovement.png",
+        id: "movePowerUp"
+    },
+    {
+        src: "images/increaserange.png",
+        id: "rangePowerUp"
     },
     {
         src: "images/regbomb.png",
@@ -338,6 +382,10 @@ manifest = [
     {
         src: "images/unbreakabletree.png",
         id: "tree"
+    },
+    {
+        src: "images/RedX.png",
+        id: "redX"
     }
 
 ];
@@ -371,6 +419,7 @@ function loadComplete(event) {
 
     gameState = CONSTRUCT;
 
+    initPowerups();
     setImageStack();
 
     playerSpriteInit();
@@ -378,10 +427,18 @@ function loadComplete(event) {
     startLoop();
 }
 
+function initPowerups() {
+    powerups = {
+        bomb: new createjs.Bitmap(queue.getResult("bombPowerUp")),
+        range: new createjs.Bitmap(queue.getResult("rangePowerUp")),
+        move: new createjs.Bitmap(queue.getResult("movePowerUp")),
+    }
+}
+
 function updateHUD() {
     for (var i = 0; i < playerData.length; i++) {
         playerData[i].nameText = playerData[i].name;
-        playerData[i].scoreText = playerData[i].score;
+        playerData[i].scoreText = "Score: " + playerData[i].score;
         playerData[i].livesText = playerData[i].lives;
         playerData[i].powerupText = playerData[i].powerup;
     }
@@ -394,31 +451,41 @@ function addPlayer(name, score, lives, powerup, slotId) {
     if (existingContainer) {
         stage.removeChild(existingContainer);
     }
+    if (!playersInGameText) {
+        playersInGameText = new createjs.Text("Players In Game:", "14px Arial", '#000');
+        playersInGameText.x = 20;
+        playersInGameText.y = 18;
+        stage.addChild(playersInGameText);
 
+    }
     var playerContainer = new createjs.Container();
 
     var playerName = new createjs.Text(name, "12px Arial", "#000");
     playerName.x = 20;
-    playerName.y = 75 * slotId + 20;
+    playerName.y = 35 + slotId * 15 //75 * slotId + 20;
     playerName.name = "player" + slotId + "name";
+    titlePlayerList.push(playerName);
     stage.addChild(playerName);
 
-    var playerScore = new createjs.Text(score, "12px Arial", "#000");
+    var playerScore = new createjs.Text("Score: " + score, "12px Arial", "#000");
     playerScore.x = 20;
     playerScore.y = 75 * slotId + 35;
     playerScore.name = "player" + slotId + "score";
+    playerScore.visible = false;
     stage.addChild(playerScore);
 
     var playerLives = new createjs.Text(lives, "12px Arial", "#000");
     playerLives.x = 20;
     playerLives.y = 75 * slotId + 50;
     playerLives.name = "player" + slotId + "lives";
+    playerLives.visible = false;
     stage.addChild(playerLives);
 
     var playerPowerUp = new createjs.Text(powerup, "12px Arial", "#000");
     playerPowerUp.x = 20;
     playerPowerUp.y = 75 * slotId + 65;
     playerPowerUp.name = "player" + slotId + "powerup";
+    playerPowerUp.visible = false;
     stage.addChild(playerPowerUp);
 
     playerContainer.name = "player" + slotId;
@@ -434,6 +501,7 @@ function addPlayer(name, score, lives, powerup, slotId) {
         livesText: playerLives,
         powerup: powerup,
         powerupText: playerPowerUp,
+        ready: false,
         slotId: slotId
     });
 
@@ -471,18 +539,19 @@ function playerSpriteInit() {
             images: [queue.getResult("playerSprite" + i)],
             frames: [[0, 0, 28, 28], [28, 0, 28, 28], [56, 0, 28, 28], [0, 28, 28, 28], [28, 28, 28, 28], [56, 28, 28, 28], [0, 56, 28, 28], [28, 56, 28, 28], [56, 56, 28, 28], [0, 84, 28, 28], [28, 84, 28, 28], [56, 84, 28, 28]],
             animations: {
-                walkDown: [0, 2, "walkDown", .35],
-                walkLeft: [3, 5, "walkLeft", .35],
-                walkRight: [6, 8, "walkRight", .35],
-                walkUp: [9, 11, "walkUp", .35]
+                walkDown: [0, 2, "walkDown", .25],
+                walkLeft: [3, 5, "walkLeft", .25],
+                walkRight: [6, 8, "walkRight", .25],
+                walkUp: [9, 11, "walkUp", .25]
             }
         }));
 
         playerSprite = new createjs.Sprite(walksheets[i]);
         playerSprite.x = 10000;
         playerSprite.y = 10000;
-        playerSprite.gotoAndPlay("walkRight");  //loops through the animation frames (1-12) as defined above
+        playerSprite.gotoAndPlay("walkDown");  //loops through the animation frames (1-12) as defined above
         playerSprite.visible = false;
+        playerSprite.lastAnimation = "walkDown";
         stage.addChild(playerSprite);
         playerSprites.push(playerSprite);
     }

@@ -9,11 +9,17 @@ function buildTitle() {
 }
 
 function showTitle() {
-    showItems(playBtn, instructionsBtn, titleScreen, readyBtn);
+    showItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText);
+    for (var i = 0; i < titlePlayerList.length; i++) {
+        showItems(titlePlayerList[i]);
+    }
 }
 
 function hideTitle() {
-    hideItems(playBtn, instructionsBtn, titleScreen, readyBtn);
+    hideItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText);
+    for (var i = 0; i < titlePlayerList.length; i++) {
+        hideItems(titlePlayerList[i]);
+    }
 }
 
 function showInstructions() {
@@ -25,15 +31,22 @@ function hideInstructions() {
 }
 
 function showGameOver() {
-    showItems(mainmenuBtn, gameOverScreen);
+    showItems(mainmenuBtn, gameOverScreen, winnerName);
+    explosions.forEach(function (expl, index) {
+        expl.visible = false;
+    });
+    explosions = [];
+    topBarObjects = [];
 }
 
 function hideGameOver() {
-    hideItems(mainmenuBtn, gameOverScreen);
+    hideItems(mainmenuBtn, gameOverScreen, winnerName);
+    winnerName.visible = false;
+    titlePlayerList = [];
 }
 
 function showGame() {
-    showItems(currentPlayer.sprite, scoreText, gameTimerText, playAreaScreen);
+    showItems(currentPlayer.sprite, gameTimerText, playAreaScreen);//took out scoreText
     for (var i = 0; i < playerSprites.length; i++) {
         showItems(playerSprites[i]);
     }
@@ -60,4 +73,21 @@ function hideLevelOne() {
         item.visible = false;
     });
 
+}
+
+function showTopBar() {
+    showItems(topBarUI);
+    for (var i = 0; i < topBarObjects.length; i++) {
+        topBarObjects[i].visible = true;
+    }
+}
+
+function hideTopBar() {
+    hideItems(topBarUI);
+    for (var i = 0; i < topBarObjects.length; i++) {
+        topBarObjects[i].visible = false;
+    }
+    for (var i = 0; i < redXArray.length; i++) {
+        redXArray[i].visible = false;
+    }
 }

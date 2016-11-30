@@ -16,12 +16,17 @@ function runGameTimer() {
         for (var j = 0; j < breakableTiles.length; j++) {
             var collision = this.ndgmr.checkPixelCollision(breakableTiles[j], explosions[i], .8);
             if (collision) {
+                if (chanceForPowerUp()) {
+                    socket.emit('drop powerup', {
+                        x: explosions[i].x,
+                        y: explosions[i].y
+                    });
+                }
                 stage.removeChild(breakableTiles[j]);
                 breakableTiles.splice(j, 1);
                 var temp = {
                     name: explosions[i].owner
                 }
-                console.log(explosions[i].owner);
                 socket.emit('score changed', temp);
             }
         }
@@ -36,4 +41,9 @@ function runGameTimer() {
         if (currentPlayer.lives <= 0) socket.emit("dead", currentPlayer.name);
     }
 
+}
+
+function chanceForPowerUp() {
+    var num = Math.floor(Math.random() * 100);
+    return num >= 80;
 }

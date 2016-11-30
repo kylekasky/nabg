@@ -12,28 +12,35 @@ function buildBomb() {
 
 function checkMovement() {
     if (!dead) {
+        var animation = "walkDown";
         if (leftPressed) {
+            animation = "walkLeft";
             currentPlayer.sprite.x -= currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.x += currentPlayer.moveSpeed;
         }
         if (rightPressed) {
+            animation = "walkRight";
             currentPlayer.sprite.x += currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.x -= currentPlayer.moveSpeed;
         }
         if (upPressed) {
+            animation = "walkUp";
             currentPlayer.sprite.y -= currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.y += currentPlayer.moveSpeed;
         }
         if (downPressed) {
+            animation = "walkDown";
             currentPlayer.sprite.y += currentPlayer.moveSpeed;
             if (checkMoveCollision()) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
         }
         if (leftPressed || rightPressed || upPressed || downPressed) {
             console.log("telling the server coords");
+            console.log(animation);
             socket.emit("coords changed", {
                 name: currentPlayer.name,
                 x: currentPlayer.sprite.x,
-                y: currentPlayer.sprite.y
+                y: currentPlayer.sprite.y,
+                animation: animation
             });
         }
     }
@@ -92,25 +99,46 @@ function checkExplosions() {
                 currentPlayer.bombClones[i].frameSet = -1;
 
                 explosionCenter = {
-                    x: currentPlayer.bombClones[i].x,
+                    x: currentPlayer.bombClones[i].x - 15,
                     y: currentPlayer.bombClones[i].y,
                 }
 
                 causeExplosion(explosionCenter, currentPlayer.range, currentPlayer.name);
             }
         }
+//        if (enemyBombClones[i].visible) {
+//            if ((frameCount - enemyBombClones[i].frameSet) >= 90) {
+//                enemyBombClones[i].visible = false;
+//                enemyBombClones[i].frameSet = -1;
+//
+//                explosionCenter = {
+//                    x: enemyBombClones[i].x - 15,
+//                    y: enemyBombClones[i].y,
+//                }
+//
+//                causeExplosion(explosionCenter, enemyBombClones[i].range, enemyBombClones[i].name);
+//            }
+//        }
     }
     for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
         if (enemyBombClones[i].visible) {
             if ((frameCount - enemyBombClones[i].frameSet) >= 90) {
                 enemyBombClones[i].visible = false;
                 enemyBombClones[i].frameSet = -1;
+
+                explosionCenter = {
+                    x: enemyBombClones[i].x - 15,
+                    y: enemyBombClones[i].y,
+                }
+
+                causeExplosion(explosionCenter, enemyBombClones[i].range, enemyBombClones[i].name);
             }
         }
     }
 }
-
+//this will need to be called if a multiple powerup bombs is picked up
 function cloneBombs() {
+    currentPlayer.bombClones = [];
     for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
         currentPlayer.bombClones.push(currentPlayer.bomb.clone());
         stage.addChild(currentPlayer.bombClones[i]);
@@ -131,20 +159,31 @@ function dropBomb() {
                 var currentPlayerSprite = currentPlayer.sprite;
                 currentPlayer.bombClones[i].frameSet = frameCount;
                 currentPlayer.bombClones[i].x = currentPlayerSprite.x + 15;//determine which x coord to place at
-                currentPlayer.bombClones[i].y = currentPlayerSprite.y + 15;//determine which y coord to place at
+                currentPlayer.bombClones[i].y = currentPlayerSprite.y;//determine which y coord to place at
                 currentPlayer.bombClones[i].visible = true;
                 currentPlayer.bombClones[i].name = currentPlayer.name;
                 spacePressed = false;
-                console.log('game_player:dropBomb');
+                //console.log('game_player:dropBomb');
                 var bombInfoToSend = {
                     name: currentPlayer.name,
                     x: currentPlayer.bombClones[i].x,
-                    y: currentPlayer.bombClones[i].y
+                    y: currentPlayer.bombClones[i].y,
+                    range: currentPlayer.range
                 }
                 socket.emit('bomb place', bombInfoToSend);
                 break;
             }
         }
+    }
+}
+
+function hideBombs() {
+    for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
+        currentPlayer.bombClones[i].visible = false;
+    }
+    
+    for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
+        enemyBombClones[i].visible = false;
     }
 }
 
@@ -157,6 +196,8 @@ function placeBomb(bombToPlace) {
                 enemyBombClones[i].x = bombToPlace.x;//determine which x coord to place at
                 enemyBombClones[i].y = bombToPlace.y;//determine which y coord to place at
                 enemyBombClones[i].visible = true;
+                enemyBombClones[i].name = bombToPlace.name;
+                enemyBombClones[i].range = bombToPlace.range;
                 //socket.emit('bomb place', currentPlayer.bombClones[i]);
                 break;
             }
