@@ -71,9 +71,9 @@ io.on("connection", function (socket) {
             var num = Math.floor(Math.random() * 3);
             var powerup = "";
             switch (num) {
-                case 0: powerup = "bombPowerUp"; break;
-                case 1: powerup = "movePowerUp"; break;
-                case 2: powerup = "rangePowerUp"; break;
+                case 0: powerup = "bomb"; break;
+                case 1: powerup = "move"; break;
+                case 2: powerup = "range"; break;
                 default: break;
             }
             io.emit("powerup dropped", {

@@ -14,6 +14,7 @@ var titlePlayerList = [];
 var dead = false;
 var winnerName;
 var powerups = {};
+var powerupDrops = [];
 var playersInGameText = false;
 var CANVAS_HEIGHT = 600;
 var CANVAS_WIDTH = 800;
@@ -200,15 +201,34 @@ $('document').ready(function () {
     });
 
     socket.on('powerup dropped', function (powerup) {
-        //clone powerup.name
-        //place at x,y
-        //disappear after 5 seconds
-        //disappear when touched, apply powerup
+        console.log(powerup.name);
+        var newPD = powerups[powerup.name].clone();
+        newPD.name = powerup.name;
+        newPD.x = powerup.x;
+        newPD.y = powerup.y;
+        newPD.frameSet = frameCount;
+        newPD.visible = true;
+        powerupDrops.push(newPD);
+        stage.addChild(newPD);
     });
 
     socket.on('powerup change', function (powerup) {
         $('#messages').prepend($('<li>').text(powerup.name + ' got ' + powerup.power + ' powerup'));
-        $('#' + powerup.name + 'PowerUp').text('Power Up: ' + powerup.power);
+
+        switch (powerup.name) {
+            case "bomb":
+                MAX_BOMBS_DEPLOYABLE++;
+                break;
+            case "range":
+                currentPlayer.range++;
+                break;
+            case "move":
+                currentPlayer.moveSpeed += 2;
+                break;
+            default:
+                console.log("Power up error");
+                break;
+        }
     });
 
     socket.on('remove player', function (idToRemove) {
@@ -431,9 +451,9 @@ function loadComplete(event) {
 
 function initPowerups() {
     powerups = {
-        bomb: new createjs.Bitmap(queue.getResult("bombPowerUp")),
-        range: new createjs.Bitmap(queue.getResult("rangePowerUp")),
-        move: new createjs.Bitmap(queue.getResult("movePowerUp")),
+        "bomb": new createjs.Bitmap(queue.getResult("bombPowerUp")),
+        "range": new createjs.Bitmap(queue.getResult("rangePowerUp")),
+        "move": new createjs.Bitmap(queue.getResult("movePowerUp")),
     }
 }
 

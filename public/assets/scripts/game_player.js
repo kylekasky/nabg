@@ -1,6 +1,6 @@
 var explosions = [];
 var MAX_BOMBS_DEPLOYABLE = 1;
-var MAX_ENEMY_BOMBS = 10;
+var MAX_ENEMY_BOMBS = 20;
 var enemyBombClones = [];
 
 function buildBomb() {
