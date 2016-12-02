@@ -3,6 +3,7 @@ var levelOneStageObjects = [],
     levelThreeStageObjects = [];
 var breakableTiles = [];
 var unbreakableTiles = [];
+var lifeSprites = [];
 var topBarUI = {};
 var topBarObjects = [];
 var redXArray = [];
@@ -186,15 +187,28 @@ function levelThreeBuild() {
     hideLevelThree();
 }
 
+
 function fillTopBarUI() {
     playerData.forEach(function (player, index) {
         // console.log('playerIndex: ' + index);
         if (player.ready) {
             var uiSpriteClone = playerSprites[index].clone(true);
-            uiSpriteClone.x = 25 + 175 * index;
+            uiSpriteClone.x = 25 + 175 * index - 15;
             uiSpriteClone.y = 11;
             uiSpriteClone.visible = false;
             uiSpriteClone.gotoAndPlay("walkDown");
+            var uiSpriteClone2 = playerSprites[index].clone(true);
+            uiSpriteClone2.x = 25 + 175 * index;
+            uiSpriteClone2.y = 11;
+            uiSpriteClone2.visible = false;
+            uiSpriteClone2.gotoAndPlay("walkDown");
+            var uiSpriteClone3 = playerSprites[index].clone(true);
+            uiSpriteClone3.x = 25 + 175 * index + 15;
+            uiSpriteClone3.y = 11;
+            uiSpriteClone3.visible = false;
+            uiSpriteClone3.gotoAndPlay("walkDown");
+            var spritesSet = [uiSpriteClone, uiSpriteClone2, uiSpriteClone3];
+            lifeSprites.push(spritesSet);
 
             var redX = new createjs.Bitmap(queue.getResult('redX'));
             redX.x = 25 + 175 * index;
@@ -211,7 +225,11 @@ function fillTopBarUI() {
             topBarObjects.push(player.nameText);
             topBarObjects.push(player.scoreText);
             topBarObjects.push(uiSpriteClone);
+            topBarObjects.push(uiSpriteClone2);
+            topBarObjects.push(uiSpriteClone3);
             stage.addChild(uiSpriteClone);
+            stage.addChild(uiSpriteClone2);
+            stage.addChild(uiSpriteClone3);
             stage.addChild(redX);
         }
     });
