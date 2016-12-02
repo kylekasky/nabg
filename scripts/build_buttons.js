@@ -21,10 +21,10 @@ function setupButtons() {
 
     playBtn.x = 650;
     playBtn.y = 500;
-    stage.addChild(playBtn);
+    // stage.addChild(playBtn);
 
     playBtn.on("click", function (evt) {
-        console.log("Play Clicked");
+        // console.log("Play Clicked");
         if (gameReady) {
             socket.emit("game start")
         } else {
@@ -41,12 +41,12 @@ function setupButtons() {
     //     console.log("Play Mouse Down");
     // });
 
-    instructionsBtn.x = 500;
-    instructionsBtn.y = 500;
+    instructionsBtn.x = 330;
+    instructionsBtn.y = 400;
     stage.addChild(instructionsBtn);
 
     instructionsBtn.on("click", function (evt) {
-        console.log("Instructions Clicked");
+        // console.log("Instructions Clicked");
         gameState = INSTRUCTIONS;
     });
     // instructionsBtn.on("mouseover", function (evt) {
@@ -64,8 +64,8 @@ function setupButtons() {
     stage.addChild(mainmenuBtn);
 
     mainmenuBtn.on("click", function (evt) {
-        console.log("Main Menu Clicked");
-        gameState = TITLE;
+        // console.log("Main Menu Clicked");
+        gameState = RESET;
     });
     // mainmenuBtn.on("mouseover", function (evt) {
     //     console.log("Main Menu Mouse Over");

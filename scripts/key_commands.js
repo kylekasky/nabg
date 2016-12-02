@@ -46,5 +46,5 @@ function handleKeyUp(evt) {
     }
 }
 
-document.onkeydown = handleKeyDown;
+//document.onkeydown = handleKeyDown;
 document.onkeyup = handleKeyUp;
