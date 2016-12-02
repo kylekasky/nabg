@@ -48,61 +48,61 @@ $('document').ready(function () {
     //    socket.on("client joined", function(newestPlayer) {
     //    });
 
-    $('#lives').submit(function (evt) {
-        evt.preventDefault();
-        var temp = {
-            name: currentPlayer.name
-        }
-        socket.emit('life changed', temp);
-    });
-
-    $('#message_form').submit(function (evt) {
-        evt.preventDefault();
-        var temp = {
-            name: currentPlayer.name,
-            msg: $('#msg').val()
-        }
-        socket.emit('chat message', temp);
-        $('#msg').val("");
-    });
-
-    $('#name_form').submit(function (evt) {
-        evt.preventDefault();
-        var playerName = document.getElementById('name').value;
-        currentPlayer = {
-            range: 1,
-            bomb: {},
-            bombClones: [],
-            lives: 3,
-            moveSpeed: 4,
-            name: playerName,
-            powerup: 'None',
-            ready: false,
-            score: 0,
-            sid: socket.id,
-            sprite: playerSprite
-        };
-        socket.emit('new player', playerName);
-        $('#message_form').show();
-        $('#name_form').hide();
-    });
-
-    $('#powerup').submit(function (evt) {
-        evt.preventDefault();
-        var temp = {
-            name: currentPlayer.name,
-            power: 'cat'
-        };
-        socket.emit('powerup changed', temp);
-    });
-
-    $('#score').submit(function (evt) {
-        evt.preventDefault();
-        var temp = {
-            name: currentPlayer.name
-        };
-        socket.emit('score changed', temp);
-    });
+//    $('#lives').submit(function (evt) {
+//        evt.preventDefault();
+//        var temp = {
+//            name: currentPlayer.name
+//        }
+//        socket.emit('life changed', temp);
+//    });
+//
+//    $('#message_form').submit(function (evt) {
+//        evt.preventDefault();
+//        var temp = {
+//            name: currentPlayer.name,
+//            msg: $('#msg').val()
+//        }
+//        socket.emit('chat message', temp);
+//        $('#msg').val("");
+//    });
+//
+//    $('#name_form').submit(function (evt) {
+//        evt.preventDefault();
+//        var playerName = document.getElementById('name').value;
+//        currentPlayer = {
+//            range: 1,
+//            bomb: {},
+//            bombClones: [],
+//            lives: 3,
+//            moveSpeed: 4,
+//            name: playerName,
+//            powerup: 'None',
+//            ready: false,
+//            score: 0,
+//            sid: socket.id,
+//            sprite: playerSprite
+//        };
+//        socket.emit('new player', playerName);
+//        $('#message_form').show();
+//        $('#name_form').hide();
+//    });
+//
+//    $('#powerup').submit(function (evt) {
+//        evt.preventDefault();
+//        var temp = {
+//            name: currentPlayer.name,
+//            power: 'cat'
+//        };
+//        socket.emit('powerup changed', temp);
+//    });
+//
+//    $('#score').submit(function (evt) {
+//        evt.preventDefault();
+//        var temp = {
+//            name: currentPlayer.name
+//        };
+//        socket.emit('score changed', temp);
+//    });
 
     socket.on("bomb place recieved", function (bombRecieved) {
         placeBomb(bombRecieved);
@@ -125,7 +125,7 @@ $('document').ready(function () {
     });
 
     socket.on("game state change", function (state) {
-        console.log("new state: " + state);
+        // console.log("new state: " + state);
         if (gameState === GAME_OVER) { isGameOver = true; }
         gameState = state;
     });
@@ -178,6 +178,11 @@ $('document').ready(function () {
             addPlayer(players[i].name, players[i].score, players[i].lives, players[i].powerup, players[i].playerSlotId);
             if (players[i].name == currentPlayer.name) {
                 currentPlayer.sprite = playerSprites[i];
+                currentPlayer.range = 1;
+                currentPlayer.lives = 3;
+                currentPlayer.ready = false;
+                currentPlayer.moveSpeed = 4;
+                dead = false;
             }
         }
     });
@@ -195,13 +200,13 @@ $('document').ready(function () {
             playerData.forEach(function (player, index) {
                 player.ready = true;
             })
-            console.log('allPlayersReady');
+            // console.log('allPlayersReady');
             gameState = START_GAME;
         }
     });
 
     socket.on('powerup dropped', function (powerup) {
-        console.log(powerup.name);
+        // console.log(powerup.name);
         var newPD = powerups[powerup.name].clone();
         newPD.name = powerup.name;
         newPD.x = powerup.x;
@@ -214,7 +219,7 @@ $('document').ready(function () {
 
     socket.on('powerup change', function (powerup) {
         $('#messages').prepend($('<li>').text(powerup.name + ' got ' + powerup.power + ' powerup'));
-        console.log(powerup.name + ":" + powerup.power);
+        // console.log(powerup.name + ":" + powerup.power);
         switch (powerup.power) {
             case "bomb":
                 MAX_BOMBS_DEPLOYABLE++;
@@ -227,13 +232,13 @@ $('document').ready(function () {
                 currentPlayer.moveSpeed += 2;
                 break;
             default:
-                console.log("Power up error");
+                // console.log("Power up error");
                 break;
         }
     });
 
     socket.on('remove player', function (idToRemove) {
-        console.log('remove player handler');
+        // console.log('remove player handler');
 
         var containerToRemove = stage.getChildByName("player" + idToRemove);
 
@@ -421,13 +426,23 @@ manifest = [
     {
         src: "images/RedX.png",
         id: "redX"
+    },
+    {
+        src: "images/enterName.png",
+        id: "enterNameButton"
+    },
+    {
+        src: "sounds/explosion.mp3",
+        id: "explosionSound"
     }
 
 ];
 
 function loadFiles(event) {
+    createjs.Sound.alternateExtensions = ["mp3"];
     queue = new createjs.LoadQueue(true, "assets/");
 
+    queue.installPlugin(createjs.Sound);
     queue.on("complete", loadComplete, this);
     queue.loadManifest(manifest);
 }
@@ -444,12 +459,16 @@ function setImageStack() {
     stage.addChild(playAreaScreen2);
     stage.addChild(playAreaScreen3);
     stage.addChild(instructionScreen);
-
+    
+stage.addChild(nameInput);
+stage.addChild(nameInputButton);
     switch (levelChoice) {
         case 0: playAreaScreen = playAreaScreen1; break;
         case 1: playAreaScreen = playAreaScreen2; break;
         case 2: playAreaScreen = playAreaScreen3; break;
-        default: console.log("Level decision error"); break;
+        default:
+            // console.log("Level decision error"); 
+            break;
     }
 
     hideItems(titleScreen, playAreaScreen1, playAreaScreen2, playAreaScreen3, instructionScreen, gameOverScreen);
@@ -463,8 +482,51 @@ function loadComplete(event) {
     instructionScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
 
-    gameState = CONSTRUCT;
+nameInput = new createjs.Text("Name: ", "14px Arial", "#FFFFFF");
+nameInput.x = 20;
+nameInput.y = 500;
+    
+//nameInputButton
 
+document.onkeydown = function (evt) {
+    if (!evt) { var evt = window.event; }
+    console.log(evt);
+    
+    
+    if(evt.keyCode === 8 && nameInput.text.length > 6) {
+console.log(nameInput);
+        evt.preventDefault();
+        nameInput.text = nameInput.text.substring(0, nameInput.text.length-1);
+    } else if(evt.keyCode > 47 && evt.keyCode < 91  ) {
+        nameInput.text += evt.key;   
+    }
+}
+nameInputButton = new createjs.Bitmap(queue.getResult("enterNameButton"));
+nameInputButton.x = 20;
+nameInputButton.y = 525;
+nameInputButton.visible = false;
+    
+nameInputButton.on('click', function(){
+    var name = nameInput.text.substring(6);
+    currentPlayer = {
+            range: 1,
+            bomb: {},
+            bombClones: [],
+            lives: 3,
+            moveSpeed: 4,
+            name: name,
+            powerup: 'None',
+            ready: false,
+            score: 0,
+            sid: socket.id,
+            sprite: playerSprite
+        };
+        socket.emit('new player', name);
+    nameInputButton.visible = false;
+    document.onkeydown = handleKeyDown;
+});
+    
+    gameState = CONSTRUCT;
     initPowerups();
     setImageStack();
 
@@ -596,7 +658,7 @@ function playerSpriteInit() {
                 walkUp: [9, 11, "walkUp", .25]
             }
         }));
-
+        
         playerSprite = new createjs.Sprite(walksheets[i]);
         playerSprite.x = 10000;
         playerSprite.y = 10000;

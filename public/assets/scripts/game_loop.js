@@ -26,6 +26,7 @@ function loop() {
             gameLoop();
             break;
         case GAME_OVER:
+            storeScore();
             hideGame();
             hideTopBar();
             hideBombs();
@@ -40,6 +41,7 @@ function loop() {
                 movePlayerNames();
                 resetPlayers();
                 hideGameOver();
+                resetLevelBuild();
             }
             gameState = TITLE;
             break;
@@ -49,9 +51,57 @@ function loop() {
     stage.update();
 }
 
+function getCurrentHighScore() {
+    return parseInt(document.cookie.split(';')[0].split('=')[1]);
+}
+
+function storeScore() {
+    if (getCurrentHighScore() < playerData[0].score) {
+        document.cookie = "highscore=" + playerData[0].score + ";";
+    }
+    updateHighScore();
+}
+
 function determineWinner() {
     socket.emit("who won");
+}
 
+function removeFromStage(item) {
+    stage.removeChild(item);
+}
+
+function resetLevelBuild() {
+    levelOneStageObjects.forEach(removeFromStage);
+    levelTwoStageObjects.forEach(removeFromStage);
+    levelThreeStageObjects.forEach(removeFromStage);
+    breakableTiles.forEach(removeFromStage);
+    unbreakableTiles.forEach(removeFromStage);
+    levelOneStageObjects = [];
+    levelTwoStageObjects = [];
+    levelThreeStageObjects = [];
+    breakableTiles = [];
+    unbreakableTiles = [];
+    topBarUI = {};
+    topBarObjects = [];
+    redXArray = [];
+    levelChoice = Math.floor(Math.random() * 3);
+    switch (levelChoice) {
+        case 0: levelOneBuild(); break;
+        case 1: levelTwoBuild(); break;
+        case 2: levelThreeBuild(); break;
+        default:
+            // console.log("Level decision error"); 
+            break;
+    }
+    switch (levelChoice) {
+        case 0: playAreaScreen = playAreaScreen1; break;
+        case 1: playAreaScreen = playAreaScreen2; break;
+        case 2: playAreaScreen = playAreaScreen3; break;
+        default:
+            // console.log("Level decision error"); 
+            break;
+    }
+    topBarUIBuild();
 }
 
 function startGame() {
@@ -70,7 +120,9 @@ function startGame() {
         case 0: showLevelOne(); break;
         case 1: showLevelTwo(); break;
         case 2: showLevelThree(); break;
-        default: console.log("Level decision error"); break;
+        default:
+            // console.log("Level decision error"); 
+            break;
     }
     fillTopBarUI();
 }

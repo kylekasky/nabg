@@ -52,11 +52,13 @@ function checkMovement() {
 }
 
 function causeExplosion(center, range, name) {
+    createjs.Sound.play("explosionSound");
     var newExplosion = explosionSprite.clone();
     newExplosion.owner = name;
     newExplosion.x = center.x;
     newExplosion.y = center.y;
     newExplosion.visible = true;
+    newExplosion.frameSet = frameCount;
     stage.addChild(newExplosion);
     explosions.push(newExplosion);
 
@@ -66,6 +68,7 @@ function causeExplosion(center, range, name) {
         newExplosion.x = center.x + (30 * (i + 1));
         newExplosion.y = center.y;
         newExplosion.visible = true;
+        newExplosion.frameSet = frameCount;
         stage.addChild(newExplosion);
         explosions.push(newExplosion);
 
@@ -74,6 +77,7 @@ function causeExplosion(center, range, name) {
         newExplosion.x = center.x;
         newExplosion.y = center.y + (30 * (i + 1));
         newExplosion.visible = true;
+        newExplosion.frameSet = frameCount;
         stage.addChild(newExplosion);
         explosions.push(newExplosion);
 
@@ -82,6 +86,7 @@ function causeExplosion(center, range, name) {
         newExplosion.x = center.x - (30 * (i + 1));
         newExplosion.y = center.y;
         newExplosion.visible = true;
+        newExplosion.frameSet = frameCount;
         stage.addChild(newExplosion);
         explosions.push(newExplosion);
 
@@ -90,6 +95,7 @@ function causeExplosion(center, range, name) {
         newExplosion.x = center.x;
         newExplosion.y = center.y - (30 * (i + 1));
         newExplosion.visible = true;
+        newExplosion.frameSet = frameCount;
         stage.addChild(newExplosion);
         explosions.push(newExplosion);
     }
@@ -153,6 +159,10 @@ function cloneBombs() {
 }
 
 function cloneEnemyBombs() {
+    for (var i = 0; i < enemyBombClones.length; i++) {
+        stage.removeChild(enemyBombClones[i]);
+    }
+    enemyBombClones = [];
     for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
         enemyBombClones.push(currentPlayer.bomb.clone());
         stage.addChild(enemyBombClones[i]);
@@ -216,10 +226,14 @@ function placeBomb(bombToPlace) {
 function checkMoveCollision() {
     for (var i = 0; i < breakableTiles.length; i++) {
         var collision = this.ndgmr.checkPixelCollision(breakableTiles[i], currentPlayer.sprite, .8);
-        if (collision) return collision;
+        if (collision) {
+            return collision;
+        }
     }
     for (var i = 0; i < unbreakableTiles.length; i++) {
         var collision = this.ndgmr.checkPixelCollision(unbreakableTiles[i], currentPlayer.sprite, .8);
-        if (collision) return collision;
+        if (collision) {
+            return collision;
+        }
     }
 }

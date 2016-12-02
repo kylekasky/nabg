@@ -5,7 +5,7 @@ var mouseX, mouseY;
 
 function setupHUD() {
     mouseCoords = new createjs.Text("Mouse: ", "12px Arial", "#000");
-    mouseCoords.x = 700;
+    mouseCoords.x = 680;
     mouseCoords.y = 10;
     stage.addChild(mouseCoords);
 
@@ -23,13 +23,18 @@ function setupHUD() {
     hideItems(scoreText, gameTimerText);
 }
 
-function mouseInit() {
-    stage.on("stagemousemove", function (evt) {
-        mouseX = Math.floor(evt.stageX);
-        mouseY = Math.floor(evt.stageY);
-        mouseCoords.text = "Mouse: " + mouseX + ", " + mouseY;
-    });
+function updateHighScore() {
+    mouseCoords.text = "Personal Best: " + getCurrentHighScore();
+    stage.update();
+}
 
+function mouseInit() {
+    // stage.on("stagemousemove", function (evt) {
+    //     mouseX = Math.floor(evt.stageX);
+    //     mouseY = Math.floor(evt.stageY);
+    //     mouseCoords.text = "Mouse: " + mouseX + ", " + mouseY;
+    // });
+    updateHighScore();
 }
 
 
@@ -43,7 +48,9 @@ function construct() {
         case 0: levelOneBuild(); break;
         case 1: levelTwoBuild(); break;
         case 2: levelThreeBuild(); break;
-        default: console.log("Level decision error"); break;
+        default:
+            // console.log("Level decision error"); 
+            break;
     }
 
 

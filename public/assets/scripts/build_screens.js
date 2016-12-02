@@ -9,14 +9,14 @@ function buildTitle() {
 }
 
 function showTitle() {
-    showItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText);
+    showItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText, nameInput, nameInputButton);
     for (var i = 0; i < titlePlayerList.length; i++) {
         showItems(titlePlayerList[i]);
     }
 }
 
 function hideTitle() {
-    hideItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText);
+    hideItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText, nameInput, nameInputButton);
     for (var i = 0; i < titlePlayerList.length; i++) {
         hideItems(titlePlayerList[i]);
     }
@@ -57,20 +57,23 @@ function hideGame() {
     for (var i = 0; i < playerSprites.length; i++) {
         hideItems(playerSprites[i]);
     }
+    for (var i = 0; i < powerupDrops.length; i++) {
+        hideItems(powerupDrops[i]);
+    }
     hideLevelOne();
     hideLevelTwo();
     hideLevelThree();
 }
 
 function showLevelOne() {
-    console.log('build_screens:showLevelOne');
+    // console.log('build_screens:showLevelOne');
     levelOneStageObjects.forEach(function (item, index) {
         item.visible = true;
     });
 }
 
 function hideLevelOne() {
-    console.log('build_screens:hideLevelOne');
+    // console.log('build_screens:hideLevelOne');
     levelOneStageObjects.forEach(function (item, index) {
         item.visible = false;
     });
@@ -78,14 +81,14 @@ function hideLevelOne() {
 }
 
 function showLevelTwo() {
-    console.log('build_screens:showLevelTwo');
+    // console.log('build_screens:showLevelTwo');
     levelTwoStageObjects.forEach(function (item, index) {
         item.visible = true;
     });
 }
 
 function hideLevelTwo() {
-    console.log('build_screens:hideLevelTwo');
+    // console.log('build_screens:hideLevelTwo');
     levelTwoStageObjects.forEach(function (item, index) {
         item.visible = false;
     });
@@ -93,14 +96,14 @@ function hideLevelTwo() {
 }
 
 function showLevelThree() {
-    console.log('build_screens:showLevelThree');
+    // console.log('build_screens:showLevelThree');
     levelThreeStageObjects.forEach(function (item, index) {
         item.visible = true;
     });
 }
 
 function hideLevelThree() {
-    console.log('build_screens:hideLevelThree');
+    // console.log('build_screens:hideLevelThree');
     levelThreeStageObjects.forEach(function (item, index) {
         item.visible = false;
     });
