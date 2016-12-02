@@ -39,6 +39,13 @@ function construct() {
     setupHUD();
     mouseInit();
     showTitle();
-    levelOneBuild();
+    switch (levelChoice) {
+        case 0: levelOneBuild(); break;
+        case 1: levelTwoBuild(); break;
+        case 2: levelThreeBuild(); break;
+        default: console.log("Level decision error"); break;
+    }
+
+
     topBarUIBuild();
 }

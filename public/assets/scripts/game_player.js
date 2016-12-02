@@ -2,6 +2,7 @@ var explosions = [];
 var MAX_BOMBS_DEPLOYABLE = 1;
 var MAX_ENEMY_BOMBS = 20;
 var enemyBombClones = [];
+var lastAnimation = "walkDown";
 
 function buildBomb() {
     currentPlayer.bomb = new createjs.Bitmap(queue.getResult("regularBomb"));
@@ -34,14 +35,17 @@ function checkMovement() {
             if (checkMoveCollision()) currentPlayer.sprite.y -= currentPlayer.moveSpeed;
         }
         if (leftPressed || rightPressed || upPressed || downPressed) {
-            console.log("telling the server coords");
-            console.log(animation);
             socket.emit("coords changed", {
                 name: currentPlayer.name,
                 x: currentPlayer.sprite.x,
                 y: currentPlayer.sprite.y,
                 animation: animation
             });
+        }
+
+        if (lastAnimation != animation) {
+            currentPlayer.sprite.gotoAndPlay(animation);
+            lastAnimation = animation;
         }
     }
 
@@ -138,6 +142,9 @@ function checkExplosions() {
 }
 //this will need to be called if a multiple powerup bombs is picked up
 function cloneBombs() {
+    for (var i = 0; i < currentPlayer.bombClones.length; i++) {
+        stage.removeChild(currentPlayer.bombClones[i]);
+    }
     currentPlayer.bombClones = [];
     for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
         currentPlayer.bombClones.push(currentPlayer.bomb.clone());

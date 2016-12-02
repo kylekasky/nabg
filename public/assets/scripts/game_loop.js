@@ -35,7 +35,7 @@ function loop() {
             gameState = HOLD;
             break;
         case RESET:
-            if(isGameOver) {
+            if (isGameOver) {
                 isGameOver = false;
                 movePlayerNames();
                 resetPlayers();
@@ -66,7 +66,12 @@ function startGame() {
     buildBomb();
     cloneBombs();
     cloneEnemyBombs();
-    showLevelOne();
+    switch (levelChoice) {
+        case 0: showLevelOne(); break;
+        case 1: showLevelTwo(); break;
+        case 2: showLevelThree(); break;
+        default: console.log("Level decision error"); break;
+    }
     fillTopBarUI();
 }
 
@@ -85,7 +90,7 @@ function movePlayerNames() {
     titlePlayerList.forEach(function (playerTextObj, index) {
         playerTextObj.x = 20;
         playerTextObj.y = 35 + index * 15;
-    });   
+    });
 }
 
 function resetPlayers() {

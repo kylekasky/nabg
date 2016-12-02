@@ -19,6 +19,7 @@ var playersInGameText = false;
 var CANVAS_HEIGHT = 600;
 var CANVAS_WIDTH = 800;
 var isGameOver = false;
+var levelChoice = Math.floor(Math.random() * 3);
 const HOLD = 0;
 const CONSTRUCT = 100;
 const TITLE = 200;
@@ -113,7 +114,6 @@ $('document').ready(function () {
 
     socket.on("coords change", function (coords) {
         if (coords.name != currentPlayer.name) {
-            console.log(coords.animation);
             playerSprites[coords.who].x = coords.x;
             playerSprites[coords.who].y = coords.y;
             if (playerSprites[coords.who].lastAnimation != coords.animation) {
@@ -214,10 +214,11 @@ $('document').ready(function () {
 
     socket.on('powerup change', function (powerup) {
         $('#messages').prepend($('<li>').text(powerup.name + ' got ' + powerup.power + ' powerup'));
-
-        switch (powerup.name) {
+        console.log(powerup.name + ":" + powerup.power);
+        switch (powerup.power) {
             case "bomb":
                 MAX_BOMBS_DEPLOYABLE++;
+                cloneBombs();
                 break;
             case "range":
                 currentPlayer.range++;
@@ -327,7 +328,15 @@ manifest = [
     },
     {
         src: "images/levelone bg.png",
-        id: "playAreaScreen"
+        id: "playAreaScreen1"
+    },
+    {
+        src: "images/leveltwo bg.png",
+        id: "playAreaScreen2"
+    },
+    {
+        src: "images/level three bg.png",
+        id: "playAreaScreen3"
     },
     {
         src: "images/title.png",
@@ -350,14 +359,6 @@ manifest = [
         id: "playerSprite3"
     },
     {
-        src: "images/unbreakabletree.png",
-        id: "unbreakableTree"
-    },
-    {
-        src: "images/breakableflower.png",
-        id: "breakableFlower"
-    },
-    {
         src: "images/explosion.png",
         id: "explosion"
     },
@@ -376,10 +377,6 @@ manifest = [
     {
         src: "images/main menu button.png",
         id: "mainmenuBtn"
-    },
-    {
-        src: "images/continue button.png",
-        id: "continueBtn"
     },
     {
         src: "images/extrabomb.png",
@@ -406,6 +403,22 @@ manifest = [
         id: "tree"
     },
     {
+        src: "images/breakableshrub.png",
+        id: "shrub"
+    },
+    {
+        src: "images/unbreakablefountain.png",
+        id: "fountain"
+    },
+    {
+        src: "images/breakablerock.png",
+        id: "brock"
+    },
+    {
+        src: "images/unbreakablerock.png",
+        id: "urock"
+    },
+    {
         src: "images/RedX.png",
         id: "redX"
     }
@@ -427,15 +440,26 @@ function startLoop() {
 function setImageStack() {
     stage.addChild(gameOverScreen);
     stage.addChild(titleScreen);
-    stage.addChild(playAreaScreen);
+    stage.addChild(playAreaScreen1);
+    stage.addChild(playAreaScreen2);
+    stage.addChild(playAreaScreen3);
     stage.addChild(instructionScreen);
 
-    hideItems(titleScreen, playAreaScreen, instructionScreen, gameOverScreen);
+    switch (levelChoice) {
+        case 0: playAreaScreen = playAreaScreen1; break;
+        case 1: playAreaScreen = playAreaScreen2; break;
+        case 2: playAreaScreen = playAreaScreen3; break;
+        default: console.log("Level decision error"); break;
+    }
+
+    hideItems(titleScreen, playAreaScreen1, playAreaScreen2, playAreaScreen3, instructionScreen, gameOverScreen);
 }
 
 function loadComplete(event) {
     titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
-    playAreaScreen = new createjs.Bitmap(queue.getResult("playAreaScreen"));
+    playAreaScreen1 = new createjs.Bitmap(queue.getResult("playAreaScreen1"));
+    playAreaScreen2 = new createjs.Bitmap(queue.getResult("playAreaScreen2"));
+    playAreaScreen3 = new createjs.Bitmap(queue.getResult("playAreaScreen3"));
     instructionScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
 
@@ -488,6 +512,11 @@ function addPlayer(name, score, lives, powerup, slotId) {
     playerName.name = "player" + slotId + "name";
     titlePlayerList.push(playerName);
     stage.addChild(playerName);
+
+    if (stage.getChildByName("player" + slotId + "score") !== null) {
+        var textToDelete = stage.getChildByName("player" + slotId + "score");
+        stage.removeChild(textToDelete);
+    }
 
     var playerScore = new createjs.Text("Score: " + score, "12px Arial", "#000");
     playerScore.x = 20;

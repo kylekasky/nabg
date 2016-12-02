@@ -52,11 +52,11 @@ function runGameTimer() {
         if (collision) {
             powerupDrops[i].visible = false;
             stage.removeChild(powerupDrops[i]);
-            powerupDrops.splice(i, 1);
             var temp = {
                 name: currentPlayer.name,
                 power: powerupDrops[i].name
             }
+            powerupDrops.splice(i, 1);
             socket.emit('powerup changed', temp);
         } else if ((frameCount - powerupDrops[i].frameSet) >= 150) {
             powerupDrops[i].visible = false;

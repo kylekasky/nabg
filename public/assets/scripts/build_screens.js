@@ -58,6 +58,8 @@ function hideGame() {
         hideItems(playerSprites[i]);
     }
     hideLevelOne();
+    hideLevelTwo();
+    hideLevelThree();
 }
 
 function showLevelOne() {
@@ -70,6 +72,36 @@ function showLevelOne() {
 function hideLevelOne() {
     console.log('build_screens:hideLevelOne');
     levelOneStageObjects.forEach(function (item, index) {
+        item.visible = false;
+    });
+
+}
+
+function showLevelTwo() {
+    console.log('build_screens:showLevelTwo');
+    levelTwoStageObjects.forEach(function (item, index) {
+        item.visible = true;
+    });
+}
+
+function hideLevelTwo() {
+    console.log('build_screens:hideLevelTwo');
+    levelTwoStageObjects.forEach(function (item, index) {
+        item.visible = false;
+    });
+
+}
+
+function showLevelThree() {
+    console.log('build_screens:showLevelThree');
+    levelThreeStageObjects.forEach(function (item, index) {
+        item.visible = true;
+    });
+}
+
+function hideLevelThree() {
+    console.log('build_screens:hideLevelThree');
+    levelThreeStageObjects.forEach(function (item, index) {
         item.visible = false;
     });
 
