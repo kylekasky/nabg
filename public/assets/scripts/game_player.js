@@ -227,20 +227,32 @@ function placeBomb(bombToPlace) {
 
 function checkMoveCollision() {
     for (var i = 0; i < breakableTiles.length; i++) {
-        var collision = this.ndgmr.checkPixelCollision(breakableTiles[i], currentPlayer.sprite, .8);
+        try {
+            var collision = this.ndgmr.checkPixelCollision(breakableTiles[i], currentPlayer.sprite, .8);
+        } catch (e) {
+            console.log('weird thing');
+        }
         if (collision) {
             return collision;
         }
     }
     for (var i = 0; i < unbreakableTiles.length; i++) {
-        var collision = this.ndgmr.checkPixelCollision(unbreakableTiles[i], currentPlayer.sprite, .8);
+        try {
+            var collision = this.ndgmr.checkPixelCollision(unbreakableTiles[i], currentPlayer.sprite, .8);
+        } catch (e) {
+            console.log('weird thing');
+        }
         if (collision) {
             return collision;
         }
     }
     for (var i = 0; i < currentPlayer.bombClones.length; i++) {
         if (currentPlayer.bombClones[i].visible) {
-            var collision = this.ndgmr.checkPixelCollision(currentPlayer.bombClones[i], currentPlayer.sprite, .8);
+            try {
+                var collision = this.ndgmr.checkPixelCollision(currentPlayer.bombClones[i], currentPlayer.sprite, .8);
+            } catch (e) {
+                console.log('weird thing');
+            }
             if (canIgnoreBomb && !collision) {
                 canIgnoreBomb = false;
             }
@@ -251,7 +263,11 @@ function checkMoveCollision() {
     }
     for (var i = 0; i < enemyBombClones.length; i++) {
         if (enemyBombClones[i].visible) {
-            var collision = this.ndgmr.checkPixelCollision(enemyBombClones[i], currentPlayer.sprite, .8);
+            try {
+                var collision = this.ndgmr.checkPixelCollision(enemyBombClones[i], currentPlayer.sprite, .8);
+            } catch (e) {
+                console.log('weird thing');
+            }
             if (collision) {
                 return collision;
             }

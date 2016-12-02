@@ -491,11 +491,11 @@ function loadComplete(event) {
 
     document.onkeydown = function (evt) {
         if (!evt) { var evt = window.event; }
-        console.log(evt);
+        // console.log(evt);
 
 
         if (evt.keyCode === 8 && nameInput.text.length > 6) {
-            console.log(nameInput);
+            // console.log(nameInput);
             evt.preventDefault();
             nameInput.text = nameInput.text.substring(0, nameInput.text.length - 1);
         } else if (evt.keyCode > 47 && evt.keyCode < 91) {

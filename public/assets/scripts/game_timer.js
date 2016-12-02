@@ -18,7 +18,11 @@ function runGameTimer() {
 
     for (var i = 0; i < explosions.length; i++) {
         for (var j = 0; j < breakableTiles.length; j++) {
-            var collision = this.ndgmr.checkPixelCollision(breakableTiles[j], explosions[i], .8);
+            try {
+                var collision = this.ndgmr.checkPixelCollision(breakableTiles[j], explosions[i], .8);
+            } catch (e) {
+                console.log('weird thing');
+            }
             if (collision) {
                 if (chanceForPowerUp()) {
                     socket.emit('drop powerup', {
@@ -34,7 +38,11 @@ function runGameTimer() {
                 socket.emit('score changed', temp);
             }
         }
-        var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, explosions[i], .8);
+        try {
+            var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, explosions[i], .8);
+        } catch (e) {
+            console.log('weird thing');
+        }
         if (collision && !tookDamageRecently) {
             var temp = {
                 name: currentPlayer.name
@@ -52,7 +60,11 @@ function runGameTimer() {
     }
 
     for (var i = 0; i < powerupDrops.length; i++) {
-        var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, powerupDrops[i], .8);
+        try {
+            var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, powerupDrops[i], .8);
+        } catch (e) {
+            console.log('weird thing');
+        }
         if (collision) {
             powerupDrops[i].visible = false;
             stage.removeChild(powerupDrops[i]);
