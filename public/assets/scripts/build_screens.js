@@ -9,7 +9,7 @@ function buildTitle() {
 }
 
 function showTitle() {
-    showItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText, nameInput, nameInputButton);
+    showItems(playBtn, instructionsBtn, titleScreen, readyBtn, playersInGameText, nameInput);
     for (var i = 0; i < titlePlayerList.length; i++) {
         showItems(titlePlayerList[i]);
     }

@@ -267,7 +267,7 @@ $('document').ready(function () {
 
     socket.on('winner', function (name) {
         winnerName.text = name + " survived!";
-        winnerName.x = 200;
+        winnerName.x = 240;
         winnerName.y = 200;
         stage.addChild(winnerName);
     });
@@ -505,7 +505,7 @@ function loadComplete(event) {
     nameInputButton = new createjs.Bitmap(queue.getResult("enterNameButton"));
     nameInputButton.x = 20;
     nameInputButton.y = 525;
-    nameInputButton.visible = false;
+    nameInputButton.visible = true;
 
     nameInputButton.on('click', function () {
         var name = nameInput.text.substring(6);
