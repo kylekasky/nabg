@@ -44,9 +44,8 @@ function runGameTimer() {
             } catch (e) {
                 console.log('weird thing');
             }
-            if (collision) {
-                currentPlayer.bombClones[j].explodeNow = true;
-            }
+            if (currentPlayer.bombClones[j].visible) currentPlayer.bombClones[j].explodeNow = collision;
+
         }
         for (var j = 0; j < enemyBombClones.length; j++) {
             try {
@@ -54,9 +53,8 @@ function runGameTimer() {
             } catch (e) {
                 console.log('weird thing');
             }
-            if (collision) {
-                enemyBombClones[j].explodeNow = true;
-            }
+            if (enemyBombClones[j].visible) enemyBombClones[j].explodeNow = collision;
+
         }
         try {
             var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, explosions[i], .8);
