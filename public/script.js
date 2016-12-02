@@ -19,7 +19,7 @@ var playersInGameText = false;
 var CANVAS_HEIGHT = 600;
 var CANVAS_WIDTH = 800;
 var isGameOver = false;
-var levelChoice = Math.floor(Math.random() * 3);
+var levelChoice = 0;
 const HOLD = 0;
 const CONSTRUCT = 100;
 const TITLE = 200;
@@ -40,6 +40,7 @@ $('document').ready(function () {
         evt.preventDefault();
         var temp = '';
         socket.emit('get clients', temp);
+        socket.emit('getlevelchoice');
     });
 
     //need to add a player to the divs and the new players need to have all the players that were there first
@@ -137,6 +138,7 @@ $('document').ready(function () {
         for (var i = 0; i < playerData.length; i++) {
             if (life.name == playerData[i].name) {
                 playerData[i].lives = life.num;
+                updateLifeCounter(i);
                 playerData[i].livesText.text = life.num;
                 if (life.num === 0) {
                     socket.emit("dead", life.name);//currentPlayer.name);
@@ -274,6 +276,22 @@ $('document').ready(function () {
 
     initGame();
 });
+
+function updateLifeCounter(playerIndex) {
+    if (playerData[playerIndex].lives == 1) {
+        lifeSprites[playerIndex][0].visible = true;
+        lifeSprites[playerIndex][1].visible = false;
+        lifeSprites[playerIndex][2].visible = false;
+    } else if (playerData[playerIndex].lives == 2) {
+        lifeSprites[playerIndex][0].visible = true;
+        lifeSprites[playerIndex][1].visible = true;
+        lifeSprites[playerIndex][2].visible = false;
+    } else if (playerData[playerIndex].lives == 3) {
+        lifeSprites[playerIndex][0].visible = true;
+        lifeSprites[playerIndex][1].visible = true;
+        lifeSprites[playerIndex][2].visible = true;
+    }
+}
 
 function initGame() {
     winnerName = new createjs.Text(name + " survived!", "36px Arial", "#000");

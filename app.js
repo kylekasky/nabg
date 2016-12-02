@@ -5,6 +5,8 @@ var express = require('express'),
 
 var playerSlots = [false, false, false, false];
 var players = [];
+
+var levelChoice = Math.floor(Math.random() * 3);
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/public/index.html");
 });
@@ -36,6 +38,16 @@ io.on("connection", function (socket) {
                     players.splice(i, 1);
                 }
             }
+        });
+
+        socket.on("getlevelchoice", function () {
+            io.emit('levelchoice', levelChoice);
+        });
+
+        socket.on('newlevelchoice', function () {
+            // console.log("bef" + levelChoice);
+            // levelChoice = Math.floor(Math.random() * 3);
+            // console.log(levelChoice);
         });
 
         socket.on("bomb place", function (bombPlaced) {
@@ -121,6 +133,8 @@ io.on("connection", function (socket) {
             players = newplayers;
             console.log('app:reset players');
             io.emit('players reset', newplayers);
+            levelChoice++;
+            if (levelChoice > 2) levelChoice = 0;
         });
         socket.on('player ready', function (playerName) {
             for (var i = 0; i < players.length; i++) {

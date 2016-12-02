@@ -1,0 +1,12 @@
+Alex comments:
+	Suggested to cap FPS
+	Unknown life? Tell the players the life counts
+	Was confused by background when trying to walk around
+	Other than that, enjoyed the game and ran smoothly
+Ray comments:
+	Life needs to be on screen somewhere
+	Players shouldn't be able to run through bombs
+	Have choice of sprite color
+Andrew comments:
+	Players shouldn't be able to run through bombs
+	Have some indicator for readiness

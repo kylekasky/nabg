@@ -33,6 +33,7 @@ function loop() {
             showGameOver();
             resetGameTimer();
             determineWinner();
+            socket.emit('getlevelchoice');
             removeTitlePlayerList();
             gameState = HOLD;
             break;
@@ -93,7 +94,7 @@ function resetLevelBuild() {
     topBarUI = {};
     topBarObjects = [];
     redXArray = [];
-    levelChoice = Math.floor(Math.random() * 3);
+    socket.emit('getlevelchoice');
     switch (levelChoice) {
         case 0: levelOneBuild(); break;
         case 1: levelTwoBuild(); break;
