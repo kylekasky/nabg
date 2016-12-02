@@ -104,9 +104,10 @@ function causeExplosion(center, range, name) {
 function checkExplosions() {
     for (var i = 0; i < MAX_BOMBS_DEPLOYABLE; i++) {
         if (currentPlayer.bombClones[i].visible) {
-            if ((frameCount - currentPlayer.bombClones[i].frameSet) >= 90) {
+            if (((frameCount - currentPlayer.bombClones[i].frameSet) >= 90) || (currentPlayer.bombClones[i].explodeNow)) {
                 currentPlayer.bombClones[i].visible = false;
                 currentPlayer.bombClones[i].frameSet = -1;
+                currentPlayer.bombClones[i].explodeNow = false;
 
                 explosionCenter = {
                     x: currentPlayer.bombClones[i].x - 15,
@@ -132,9 +133,10 @@ function checkExplosions() {
     }
     for (var i = 0; i < MAX_ENEMY_BOMBS; i++) {
         if (enemyBombClones[i].visible) {
-            if ((frameCount - enemyBombClones[i].frameSet) >= 90) {
+            if (((frameCount - enemyBombClones[i].frameSet) >= 90) || (enemyBombClones[i].explodeNow)) {
                 enemyBombClones[i].visible = false;
                 enemyBombClones[i].frameSet = -1;
+                enemyBombClones.explodeNow = false;
 
                 explosionCenter = {
                     x: enemyBombClones[i].x - 15,

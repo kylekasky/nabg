@@ -33,6 +33,7 @@ function loop() {
             showGameOver();
             resetGameTimer();
             determineWinner();
+            removeTitlePlayerList();
             gameState = HOLD;
             break;
         case RESET:
@@ -49,6 +50,13 @@ function loop() {
             break;
     }
     stage.update();
+}
+
+function removeTitlePlayerList() {
+    titlePlayerList.forEach(function (player, index) {
+        player.visible = false;
+        stage.removeChild(player);
+    });
 }
 
 function getCurrentHighScore() {
@@ -71,6 +79,7 @@ function removeFromStage(item) {
 }
 
 function resetLevelBuild() {
+    MAX_BOMBS_DEPLOYABLE = 1;
     levelOneStageObjects.forEach(removeFromStage);
     levelTwoStageObjects.forEach(removeFromStage);
     levelThreeStageObjects.forEach(removeFromStage);

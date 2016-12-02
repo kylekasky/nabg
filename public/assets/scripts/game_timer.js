@@ -38,6 +38,26 @@ function runGameTimer() {
                 socket.emit('score changed', temp);
             }
         }
+        for (var j = 0; j < currentPlayer.bombClones.length; j++) {
+            try {
+                var collision = this.ndgmr.checkPixelCollision(currentPlayer.bombClones[j], explosions[i], .8);
+            } catch (e) {
+                console.log('weird thing');
+            }
+            if (collision) {
+                currentPlayer.bombClones[j].explodeNow = true;
+            }
+        }
+        for (var j = 0; j < enemyBombClones.length; j++) {
+            try {
+                var collision = this.ndgmr.checkPixelCollision(enemyBombClones[j], explosions[i], .8);
+            } catch (e) {
+                console.log('weird thing');
+            }
+            if (collision) {
+                enemyBombClones[j].explodeNow = true;
+            }
+        }
         try {
             var collision = this.ndgmr.checkPixelCollision(currentPlayer.sprite, explosions[i], .8);
         } catch (e) {
