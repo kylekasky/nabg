@@ -3,6 +3,7 @@ var MAX_BOMBS_DEPLOYABLE = 1;
 var MAX_ENEMY_BOMBS = 20;
 var enemyBombClones = [];
 var lastAnimation = "walkDown";
+var canIgnoreBomb = false;
 
 function buildBomb() {
     currentPlayer.bomb = new createjs.Bitmap(queue.getResult("regularBomb"));
@@ -180,6 +181,7 @@ function dropBomb() {
                 currentPlayer.bombClones[i].visible = true;
                 currentPlayer.bombClones[i].name = currentPlayer.name;
                 spacePressed = false;
+                canIgnoreBomb = true;
                 //console.log('game_player:dropBomb');
                 var bombInfoToSend = {
                     name: currentPlayer.name,
@@ -234,6 +236,25 @@ function checkMoveCollision() {
         var collision = this.ndgmr.checkPixelCollision(unbreakableTiles[i], currentPlayer.sprite, .8);
         if (collision) {
             return collision;
+        }
+    }
+    for (var i = 0; i < currentPlayer.bombClones.length; i++) {
+        if (currentPlayer.bombClones[i].visible) {
+            var collision = this.ndgmr.checkPixelCollision(currentPlayer.bombClones[i], currentPlayer.sprite, .8);
+            if (canIgnoreBomb && !collision) {
+                canIgnoreBomb = false;
+            }
+            if (collision && !canIgnoreBomb) {
+                return collision;
+            }
+        }
+    }
+    for (var i = 0; i < enemyBombClones.length; i++) {
+        if (enemyBombClones[i].visible) {
+            var collision = this.ndgmr.checkPixelCollision(enemyBombClones[i], currentPlayer.sprite, .8);
+            if (collision) {
+                return collision;
+            }
         }
     }
 }

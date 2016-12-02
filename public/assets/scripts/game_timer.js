@@ -45,7 +45,10 @@ function runGameTimer() {
             damagedFrame = frameCount;
         }
         if (currentPlayer.lives <= 0) socket.emit("dead", currentPlayer.name);
-        if ((frameCount - explosions[i].frameSet) > 100) explosions.splice(i, 1);
+        if (explosions[i].currentAnimation == "hidden") {
+            stage.removeChild(explosions[i]);
+            explosions.splice(i, 1);
+        }
     }
 
     for (var i = 0; i < powerupDrops.length; i++) {

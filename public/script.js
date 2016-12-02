@@ -48,61 +48,61 @@ $('document').ready(function () {
     //    socket.on("client joined", function(newestPlayer) {
     //    });
 
-//    $('#lives').submit(function (evt) {
-//        evt.preventDefault();
-//        var temp = {
-//            name: currentPlayer.name
-//        }
-//        socket.emit('life changed', temp);
-//    });
-//
-//    $('#message_form').submit(function (evt) {
-//        evt.preventDefault();
-//        var temp = {
-//            name: currentPlayer.name,
-//            msg: $('#msg').val()
-//        }
-//        socket.emit('chat message', temp);
-//        $('#msg').val("");
-//    });
-//
-//    $('#name_form').submit(function (evt) {
-//        evt.preventDefault();
-//        var playerName = document.getElementById('name').value;
-//        currentPlayer = {
-//            range: 1,
-//            bomb: {},
-//            bombClones: [],
-//            lives: 3,
-//            moveSpeed: 4,
-//            name: playerName,
-//            powerup: 'None',
-//            ready: false,
-//            score: 0,
-//            sid: socket.id,
-//            sprite: playerSprite
-//        };
-//        socket.emit('new player', playerName);
-//        $('#message_form').show();
-//        $('#name_form').hide();
-//    });
-//
-//    $('#powerup').submit(function (evt) {
-//        evt.preventDefault();
-//        var temp = {
-//            name: currentPlayer.name,
-//            power: 'cat'
-//        };
-//        socket.emit('powerup changed', temp);
-//    });
-//
-//    $('#score').submit(function (evt) {
-//        evt.preventDefault();
-//        var temp = {
-//            name: currentPlayer.name
-//        };
-//        socket.emit('score changed', temp);
-//    });
+    //    $('#lives').submit(function (evt) {
+    //        evt.preventDefault();
+    //        var temp = {
+    //            name: currentPlayer.name
+    //        }
+    //        socket.emit('life changed', temp);
+    //    });
+    //
+    //    $('#message_form').submit(function (evt) {
+    //        evt.preventDefault();
+    //        var temp = {
+    //            name: currentPlayer.name,
+    //            msg: $('#msg').val()
+    //        }
+    //        socket.emit('chat message', temp);
+    //        $('#msg').val("");
+    //    });
+    //
+    //    $('#name_form').submit(function (evt) {
+    //        evt.preventDefault();
+    //        var playerName = document.getElementById('name').value;
+    //        currentPlayer = {
+    //            range: 1,
+    //            bomb: {},
+    //            bombClones: [],
+    //            lives: 3,
+    //            moveSpeed: 4,
+    //            name: playerName,
+    //            powerup: 'None',
+    //            ready: false,
+    //            score: 0,
+    //            sid: socket.id,
+    //            sprite: playerSprite
+    //        };
+    //        socket.emit('new player', playerName);
+    //        $('#message_form').show();
+    //        $('#name_form').hide();
+    //    });
+    //
+    //    $('#powerup').submit(function (evt) {
+    //        evt.preventDefault();
+    //        var temp = {
+    //            name: currentPlayer.name,
+    //            power: 'cat'
+    //        };
+    //        socket.emit('powerup changed', temp);
+    //    });
+    //
+    //    $('#score').submit(function (evt) {
+    //        evt.preventDefault();
+    //        var temp = {
+    //            name: currentPlayer.name
+    //        };
+    //        socket.emit('score changed', temp);
+    //    });
 
     socket.on("bomb place recieved", function (bombRecieved) {
         placeBomb(bombRecieved);
@@ -459,9 +459,9 @@ function setImageStack() {
     stage.addChild(playAreaScreen2);
     stage.addChild(playAreaScreen3);
     stage.addChild(instructionScreen);
-    
-stage.addChild(nameInput);
-stage.addChild(nameInputButton);
+
+    stage.addChild(nameInput);
+    stage.addChild(nameInputButton);
     switch (levelChoice) {
         case 0: playAreaScreen = playAreaScreen1; break;
         case 1: playAreaScreen = playAreaScreen2; break;
@@ -475,6 +475,7 @@ stage.addChild(nameInputButton);
 }
 
 function loadComplete(event) {
+    if (!getCurrentHighScore()) document.cookie = "highscore=0;";
     titleScreen = new createjs.Bitmap(queue.getResult("titleScreen"));
     playAreaScreen1 = new createjs.Bitmap(queue.getResult("playAreaScreen1"));
     playAreaScreen2 = new createjs.Bitmap(queue.getResult("playAreaScreen2"));
@@ -482,33 +483,33 @@ function loadComplete(event) {
     instructionScreen = new createjs.Bitmap(queue.getResult("instructionsScreen"));
     gameOverScreen = new createjs.Bitmap(queue.getResult("gameOverScreen"));
 
-nameInput = new createjs.Text("Name: ", "14px Arial", "#FFFFFF");
-nameInput.x = 20;
-nameInput.y = 500;
-    
-//nameInputButton
+    nameInput = new createjs.Text("Name: ", "14px Arial", "#FFFFFF");
+    nameInput.x = 20;
+    nameInput.y = 500;
 
-document.onkeydown = function (evt) {
-    if (!evt) { var evt = window.event; }
-    console.log(evt);
-    
-    
-    if(evt.keyCode === 8 && nameInput.text.length > 6) {
-console.log(nameInput);
-        evt.preventDefault();
-        nameInput.text = nameInput.text.substring(0, nameInput.text.length-1);
-    } else if(evt.keyCode > 47 && evt.keyCode < 91  ) {
-        nameInput.text += evt.key;   
+    //nameInputButton
+
+    document.onkeydown = function (evt) {
+        if (!evt) { var evt = window.event; }
+        console.log(evt);
+
+
+        if (evt.keyCode === 8 && nameInput.text.length > 6) {
+            console.log(nameInput);
+            evt.preventDefault();
+            nameInput.text = nameInput.text.substring(0, nameInput.text.length - 1);
+        } else if (evt.keyCode > 47 && evt.keyCode < 91) {
+            nameInput.text += evt.key;
+        }
     }
-}
-nameInputButton = new createjs.Bitmap(queue.getResult("enterNameButton"));
-nameInputButton.x = 20;
-nameInputButton.y = 525;
-nameInputButton.visible = false;
-    
-nameInputButton.on('click', function(){
-    var name = nameInput.text.substring(6);
-    currentPlayer = {
+    nameInputButton = new createjs.Bitmap(queue.getResult("enterNameButton"));
+    nameInputButton.x = 20;
+    nameInputButton.y = 525;
+    nameInputButton.visible = false;
+
+    nameInputButton.on('click', function () {
+        var name = nameInput.text.substring(6);
+        currentPlayer = {
             range: 1,
             bomb: {},
             bombClones: [],
@@ -522,10 +523,10 @@ nameInputButton.on('click', function(){
             sprite: playerSprite
         };
         socket.emit('new player', name);
-    nameInputButton.visible = false;
-    document.onkeydown = handleKeyDown;
-});
-    
+        nameInputButton.visible = false;
+        document.onkeydown = handleKeyDown;
+    });
+
     gameState = CONSTRUCT;
     initPowerups();
     setImageStack();
@@ -658,7 +659,7 @@ function playerSpriteInit() {
                 walkUp: [9, 11, "walkUp", .25]
             }
         }));
-        
+
         playerSprite = new createjs.Sprite(walksheets[i]);
         playerSprite.x = 10000;
         playerSprite.y = 10000;
@@ -673,9 +674,10 @@ function playerSpriteInit() {
 function explosionSpriteInit() {
     var explosion = new createjs.SpriteSheet({
         images: [queue.getResult("explosion")],
-        frames: [[0, 0, 32, 32], [32, 0, 32, 32], [64, 0, 32, 32], [96, 0, 32, 32], [0, 32, 32, 32], [32, 32, 32, 32], [64, 32, 32, 32], [96, 32, 32, 32], [0, 64, 32, 32], [32, 64, 32, 32], [64, 64, 32, 32], [96, 64, 32, 32], [0, 96, 32, 32], [32, 96, 32, 32], [64, 96, 32, 32], [96, 96, 32, 32]],
+        frames: [[0, 0, 32, 32], [32, 0, 32, 32], [64, 0, 32, 32], [96, 0, 32, 32], [0, 32, 32, 32], [32, 32, 32, 32], [64, 32, 32, 32], [96, 32, 32, 32], [0, 64, 32, 32], [32, 64, 32, 32], [64, 64, 32, 32], [96, 64, 32, 32], [0, 96, 32, 32], [32, 96, 32, 32], [64, 96, 32, 32], [96, 96, 32, 32], [0, 0, 0, 0]],
         animations: {
-            boom: [0, 15, "false"]
+            boom: [0, 15, "hidden"],
+            hidden: [16]
         }
     });
 
